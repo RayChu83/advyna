@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
-import NavMenu from "@/components/ui/NavMenu";
-import FooterMenu from "@/components/ui/FooterMenu";
 
 const manropeFont = Manrope({ subsets: ["latin"] });
 
@@ -28,9 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${manropeFont.className}`} id="portal-root">
-        <NavMenu />
         {children}
-        <FooterMenu />
         <Toaster position="bottom-right" closeButton />
       </body>
     </html>
