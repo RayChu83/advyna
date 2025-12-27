@@ -14,9 +14,11 @@ import { RxArrowTopRight } from "react-icons/rx";
 export default function SyllabusUpload({
   files,
   setFiles,
+  setError,
 }: {
   files: File[];
   setFiles: (files: File[]) => void;
+  setError: (error: string) => void;
 }) {
   const fileObjectURLs = useMemo(() => {
     return files.map((file) => URL.createObjectURL(file));
@@ -59,7 +61,15 @@ export default function SyllabusUpload({
                         className="p-2 bg-white/5 hover:bg-red-500/25 cursor-pointer rounded-md transition-all duration-300"
                         type="button"
                         onClick={() => {
-                          setFiles(files.filter((_, i) => i !== index));
+                          const updatedFiles = files.filter(
+                            (_, i) => i !== index
+                          );
+                          setFiles(updatedFiles);
+                          setError(
+                            updatedFiles.length > 5
+                              ? "Maximum file limit reached"
+                              : ""
+                          );
                           URL.revokeObjectURL(fileObjectURLs[index]);
                         }}
                       >
@@ -85,7 +95,7 @@ export default function SyllabusUpload({
             ))}
             <label
               htmlFor="class-syllabus"
-              className="flex flex-col gap-4 items-center justify-center w-full text-center p-4 bg-white/20 cursor-pointer transition-all rounded-sm backdrop-blur-2xl hover:brightness-125 focus:brightness-125 active:brightness-125 text-sm outline outline-zinc-500"
+              className="flex flex-col gap-4 items-center justify-center w-full text-center p-4 bg-white/20 cursor-pointer transition-all rounded-sm backdrop-blur-2xl hover:brightness-125 focus:brightness-125 active:brightness-125 text-sm outline outline-zinc-500 mb-0"
             >
               Select more files
             </label>
@@ -97,10 +107,14 @@ export default function SyllabusUpload({
               onChange={(e) => {
                 // Zod Type Validation in the future (HTML INPUT ACCEPT Not Good Enough)
                 if (e.target.files) {
-                  setFiles([...files, ...e.target.files]);
+                  const updatedFiles = [...files, ...e.target.files];
+                  setFiles(updatedFiles);
+                  setError(
+                    updatedFiles.length > 5 ? "Maximum file limit reached" : ""
+                  );
                 }
               }}
-              accept="image/jpeg,image/png,application/pdf,text/plain"
+              accept=".jpg,.jpeg,.png,.pdf,.txt,.doc,.docx,.rtf,.md"
             />
           </ul>
         </>
@@ -129,7 +143,11 @@ export default function SyllabusUpload({
             onChange={(e) => {
               // Zod Type Validation in the future (HTML INPUT ACCEPT Not Good Enough)
               if (e.target.files) {
-                setFiles([...e.target.files]);
+                const updatedFiles = [...e.target.files];
+                setFiles(updatedFiles);
+                setError(
+                  updatedFiles.length > 5 ? "Maximum file limit reached" : ""
+                );
               }
             }}
             accept="image/jpeg,image/png,application/pdf,text/plain"

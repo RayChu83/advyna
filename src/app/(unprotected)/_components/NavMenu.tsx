@@ -22,8 +22,10 @@ export default function NavMenu() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    // if scroll position is 0.02 of the screen, set scrolled = true
-    setScrolled(latest > 0.02);
+    const hasScroll =
+      document.documentElement.scrollHeight > window.innerHeight;
+    // if scroll position is 0.02 of the screen and there is a scrollbar on page, set scrolled = true
+    setScrolled(latest > 0.02 && hasScroll);
   });
 
   return (
@@ -127,7 +129,7 @@ function MobileNavMenu({
   return (
     <section
       className={cn(
-        "bg-[#18181b]/75 inset-shadow-sm inset-shadow-black/10 backdrop-blur-lg fixed top-17 w-full z-50 flex flex-col items-center justify-between transition-all duration-300 md:-left-full",
+        "bg-[#18181b]/75 inset-shadow-sm inset-shadow-black/10 backdrop-blur-lg fixed top-17 w-full z-50 flex flex-col items-center justify-between transition-all duration-700 md:-left-full",
         !mobileNavOpen ? "-left-full" : "left-0"
       )}
       style={{ height: "calc(100dvh - 68px)" }}

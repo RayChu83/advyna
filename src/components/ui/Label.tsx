@@ -24,7 +24,7 @@ export default function Label({
       {required ? (
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="text-red-700"> *</span>
+            <span className="text-red-400"> *</span>
           </TooltipTrigger>
           <TooltipContent>Field is required</TooltipContent>
         </Tooltip>
