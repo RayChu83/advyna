@@ -126,30 +126,7 @@
   }
 }
 
-/* CSS STYLES */
-.animated-underline {
-  position: relative;
-}
-.animated-underline::before {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: -2px;
-  width: 0%;
-  height: 1px;
-  background-color: #d4d4d4;
-  transition: 300ms ease-in-out;
-}
-
-.animated-underline:hover::before,
-.animated-underline:active::before,
-.animated-underline:focus::before {
-  width: 100%;
-  left: 0;
-  right: auto;
-}
-
-@import "tailwindcss";
+/* background gradient component styles */
 
 @theme inline {
   --animate-first: moveVertical 30s ease infinite;
@@ -193,4 +170,27 @@
   100% {
     transform: translateY(-50%);
   }
+}
+
+/* CSS STYLES */
+.animated-underline {
+  position: relative;
+}
+.animated-underline::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -2px;
+  width: 0%;
+  height: 1px;
+  background-color: #d4d4d4;
+  transition: 300ms ease-in-out;
+}
+
+.animated-underline:hover::before,
+.animated-underline:active::before,
+.animated-underline:focus::before {
+  width: 100%;
+  left: 0;
+  right: auto;
 }

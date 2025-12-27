@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import InputTextGroup from "@/components/ui/InputTextGroup";
 import Label from "@/components/ui/Label";
 import Input from "@/components/ui/Input";
@@ -22,6 +22,7 @@ export default function CreateClassForm() {
     "class-syllabus-files": "",
   });
   const [syllabusType, setSyllabusType] = useState<"Files" | "Text">("Files");
+
   return (
     <form className="flex flex-col gap-4">
       <header>
@@ -76,7 +77,15 @@ export default function CreateClassForm() {
           </aside>
         </header>
         {syllabusType === "Files" ? (
-          <SyllabusUpload />
+          <SyllabusUpload
+            files={classDetails["class-syllabus-files"]}
+            setFiles={(files: File[]) =>
+              setClassDetails((prev) => ({
+                ...prev,
+                "class-syllabus-files": files,
+              }))
+            }
+          />
         ) : (
           <Input
             id="class-syllabus"
@@ -100,7 +109,7 @@ export default function CreateClassForm() {
           className="py-2 px-3 rounded-md bg-zinc-800 outline outline-zinc-600 cursor-pointer hover:brightness-110 transition-all"
           type="button"
         >
-          Cancel
+          Reset
         </button>
         <button
           className="py-2 px-3 rounded-md bg-white text-black outline outline-zinc-600 cursor-pointer hover:brightness-90 transition-all disabled:brightness-50 disabled:pointer-events-none"
