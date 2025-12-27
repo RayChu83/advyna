@@ -19,7 +19,7 @@ export default function NavLink({
     <Link
       href={href}
       className={cn(
-        "text-sm transition-all duration-300 tracking-wider text-nowrap outline-none",
+        "text-sm transition-all duration-300 tracking-wider text-nowrap outline-none font-light",
         className,
         pathname === href
           ? "text-white font-medium"

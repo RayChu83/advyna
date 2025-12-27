@@ -2,7 +2,7 @@
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import NavLink from "../../../components/ui/NavLink";
 import { AiOutlineMenu } from "react-icons/ai";
@@ -10,8 +10,11 @@ import { Tooltip, TooltipContent } from "../../../components/ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { GoArrowRight } from "react-icons/go";
 import { cn } from "@/lib/utils";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export default function NavMenu() {
+  const router = useRouter();
   // state used for determining whether the user scrolled (navbar white background)
   const [scrolled, setScrolled] = useState(false);
   const { scrollYProgress } = useScroll();
@@ -76,15 +79,17 @@ export default function NavMenu() {
             Contact
           </NavLink>
           <div className="flex items-center gap-4">
-            <Link
-              href="/sign-up"
+            <RainbowButton
               className={cn(
-                "text-black bg-white hover:outline-white active:outline-white focus:outline-white py-2 px-3 rounded-full cursor-pointer transition-all duration-300 outline-1 outline-transparent outline-offset-2 opacity-100 visible text-sm text-nowrap whitespace-nowrap",
+                "rounded-full hover:brightness-90 text-sm px-3",
                 mobileNavOpen ? "md:opacity-100 opacity-0" : null
               )}
+              onClick={() => {
+                router.push("/sign-in");
+              }}
             >
               Get started
-            </Link>
+            </RainbowButton>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -103,6 +108,7 @@ export default function NavMenu() {
         pathname={pathname}
         mobileNavOpen={mobileNavOpen}
         setMobileNavOpen={setMobileNavOpen}
+        router={router}
       />
     </motion.nav>
   );
@@ -111,10 +117,12 @@ function MobileNavMenu({
   pathname,
   mobileNavOpen,
   setMobileNavOpen,
+  router,
 }: {
   pathname: string;
   mobileNavOpen: boolean;
   setMobileNavOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  router: AppRouterInstance;
 }) {
   return (
     <section
@@ -177,9 +185,14 @@ function MobileNavMenu({
         </NavLink>
       </div>
       <div className="p-4 w-full">
-        <button className="p-4 w-full bg-white text-black cursor-pointer rounded-full hover:outline-white active:outline-white focus:outline-white outline-2 outline-transparent outline-offset-2 transition-all duration-300">
-          Get Started
-        </button>
+        <RainbowButton
+          className={cn("p-5 rounded-full hover:brightness-90 w-full")}
+          onClick={() => {
+            router.push("/sign-in");
+          }}
+        >
+          Get started
+        </RainbowButton>
       </div>
     </section>
   );

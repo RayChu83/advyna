@@ -6,8 +6,8 @@ import {
 import { formatFileSize } from "@/constants";
 import Link from "next/link";
 import { useMemo } from "react";
+import { BsFileEarmarkText } from "react-icons/bs";
 import { CgClose } from "react-icons/cg";
-import { CiFileOn } from "react-icons/ci";
 import { FaFilePdf } from "react-icons/fa6";
 import { RxArrowTopRight } from "react-icons/rx";
 
@@ -30,29 +30,29 @@ export default function SyllabusUpload({
             {files.map((file, index) => (
               <li
                 key={index}
-                className="flex items-center gap-6 p-3 rounded-sm bg-white/5"
+                className="flex sm:items-center sm:flex-row flex-col gap-x-6 gap-y-4 p-3 rounded-sm bg-white/5 outline outline-zinc-700 relative"
               >
                 {file.type.startsWith("image/") ? (
                   <img
                     src={fileObjectURLs[index]}
                     alt={file.name}
-                    className="w-12 h-12 object-cover rounded"
+                    className="sm:size-12 size-16 object-cover rounded"
                   />
                 ) : (
-                  <CiFileOn className="text-5xl" />
+                  <BsFileEarmarkText className="sm:text-5xl text-[64px]" />
                 )}
-                <div className="grid grid-cols-8 gap-3 w-full">
+                <div className="sm:grid grid-cols-8 gap-3 w-full">
                   <p className="col-span-4 overflow-hidden text-nowrap whitespace-nowrap truncate text-sm text-neutral-200">
                     {file.name}
                   </p>
                   <p className="col-span-2 text-sm font-extralight text-neutral-300">
                     {file.type}
                   </p>
-                  <p className="col-span-2 text-end text-sm font-extralight text-neutral-300">
+                  <p className="col-span-2 sm:text-end text-sm font-extralight text-neutral-300">
                     {formatFileSize(file.size)}
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 sm:static absolute top-3 right-3">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
@@ -85,7 +85,7 @@ export default function SyllabusUpload({
             ))}
             <label
               htmlFor="class-syllabus"
-              className="flex flex-col gap-4 items-center justify-center w-full text-center p-4 bg-white/20 cursor-pointer transition-all rounded-sm backdrop-blur-2xl hover:brightness-125 focus:brightness-125 active:brightness-125 text-sm"
+              className="flex flex-col gap-4 items-center justify-center w-full text-center p-4 bg-white/20 cursor-pointer transition-all rounded-sm backdrop-blur-2xl hover:brightness-125 focus:brightness-125 active:brightness-125 text-sm outline outline-zinc-500"
             >
               Select more files
             </label>
@@ -97,7 +97,7 @@ export default function SyllabusUpload({
               onChange={(e) => {
                 // Zod Type Validation in the future (HTML INPUT ACCEPT Not Good Enough)
                 if (e.target.files) {
-                  setFiles([...e.target.files]);
+                  setFiles([...files, ...e.target.files]);
                 }
               }}
               accept="image/jpeg,image/png,application/pdf,text/plain"

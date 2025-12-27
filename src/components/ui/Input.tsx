@@ -37,10 +37,10 @@ export default function Input({
       ) : (
         <textarea
           className={cn(
-            "bg-zinc-800 text-neutral-300 px-4 py-2 w-full rounded-sm outline-offset-2 transition-all border border-zinc-600 outline-2",
+            "bg-zinc-800 text-neutral-300 px-4 py-2 w-full rounded-sm outline-offset-2 transition-all border border-zinc-700 outline-2",
             error
               ? "outline-red-400/60"
-              : "outline-transparent focus:outline-zinc-400/60",
+              : "outline-transparent focus:outline-zinc-500/60",
             inputClass
           )}
           value={value}

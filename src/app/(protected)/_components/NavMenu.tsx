@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent } from "../../../components/ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { GoArrowRight } from "react-icons/go";
 import { cn } from "@/lib/utils";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 
 export default function NavMenu() {
   // state used for determining whether the user scrolled (navbar white background)
@@ -80,14 +81,14 @@ export default function NavMenu() {
             Classes
           </NavLink>
           <div className="flex items-center gap-4">
-            <button
+            <RainbowButton
               className={cn(
-                "text-black bg-white hover:outline-white active:outline-white focus:outline-white py-2 px-3 rounded-full cursor-pointer transition-all duration-300 outline-1 outline-transparent outline-offset-2 opacity-100 visible text-sm text-nowrap whitespace-nowrap",
+                "rounded-full hover:brightness-90 text-sm px-3",
                 mobileNavOpen ? "md:opacity-100 opacity-0" : null
               )}
             >
               Sign out
-            </button>
+            </RainbowButton>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -180,9 +181,11 @@ function MobileNavMenu({
         </NavLink>
       </div>
       <div className="p-4 w-full">
-        <button className="p-4 w-full bg-white text-black cursor-pointer rounded-full hover:outline-white active:outline-white focus:outline-white outline-2 outline-transparent outline-offset-2 transition-all duration-300">
+        <RainbowButton
+          className={cn("p-5 rounded-full hover:brightness-90 w-full")}
+        >
           Sign out
-        </button>
+        </RainbowButton>
       </div>
     </section>
   );

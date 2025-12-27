@@ -1,30 +1,48 @@
 "use client";
-import { useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import InputTextGroup from "@/components/ui/InputTextGroup";
 import Label from "@/components/ui/Label";
 import Input from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
 import SyllabusUpload from "./SyllabusUpload";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+
+const initClassDetails = {
+  "class-title": "",
+  "class-syllabus-text": "",
+  "class-syllabus-files": [],
+};
+
+const initClassDetailErrors = {
+  "class-title": "",
+  "class-syllabus-text": "",
+  "class-syllabus-files": "",
+};
 
 export default function CreateClassForm() {
   const [classDetails, setClassDetails] = useState<{
     "class-title": string;
     "class-syllabus-text": string;
     "class-syllabus-files": File[];
-  }>({
-    "class-title": "",
-    "class-syllabus-text": "",
-    "class-syllabus-files": [],
-  });
-  const [classDetailErrors, setClassDetailErrors] = useState({
-    "class-title": "",
-    "class-syllabus-text": "",
-    "class-syllabus-files": "",
-  });
+  }>(initClassDetails);
+  const [classDetailErrors, setClassDetailErrors] = useState(
+    initClassDetailErrors
+  );
   const [syllabusType, setSyllabusType] = useState<"Files" | "Text">("Files");
 
+  // Form Actions
+
+  const handleReset = () => {
+    setClassDetails(initClassDetails);
+    setClassDetailErrors(initClassDetailErrors);
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
+
   return (
-    <form className="flex flex-col gap-4">
+    <form className="flex flex-col gap-4" onSubmit={(e) => handleSubmit(e)}>
       <header>
         <h1 className="text-2xl font-bold tracking-wide text-neutral-200">
           Add your Class
@@ -49,7 +67,7 @@ export default function CreateClassForm() {
       <div className="flex flex-col gap-3">
         <header className="flex items-center justify-between">
           <Label id="class-syllabus" required={true} title="Class Syllabus" />
-          <aside className="p-1 rounded-sm bg-zinc-800 outline outline-zinc-600 w-fit space-x-1">
+          <aside className="p-1 rounded-sm bg-zinc-800 outline outline-zinc-700 w-fit space-x-1">
             <button
               className={cn(
                 "px-3 py-0.5 rounded-sm text-sm",
@@ -106,21 +124,23 @@ export default function CreateClassForm() {
       {/* <SyllabusUpload /> */}
       <div className="flex items-center gap-4">
         <button
-          className="py-2 px-3 rounded-md bg-zinc-800 outline outline-zinc-600 cursor-pointer hover:brightness-110 transition-all"
+          className="py-2 px-3 rounded-md bg-zinc-800 outline outline-zinc-700 cursor-pointer hover:brightness-110 transition-all"
           type="button"
+          onClick={() => handleReset()}
         >
           Reset
         </button>
-        <button
-          className="py-2 px-3 rounded-md bg-white text-black outline outline-zinc-600 cursor-pointer hover:brightness-90 transition-all disabled:brightness-50 disabled:pointer-events-none"
+        <RainbowButton
+          variant="default"
           disabled={
             !classDetails["class-title"] ||
             (!classDetails["class-syllabus-text"] &&
               !classDetails["class-syllabus-files"].length)
           }
+          className="disabled:animate-none disabled:pointer-events-none text-base py-4.5 px-3 hover:brightness-90 font-normal"
         >
           Continue
-        </button>
+        </RainbowButton>
       </div>
     </form>
   );
