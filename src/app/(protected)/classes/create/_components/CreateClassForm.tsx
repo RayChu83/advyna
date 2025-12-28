@@ -8,6 +8,13 @@ import { RainbowButton } from "@/components/ui/rainbow-button";
 import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { CiCircleQuestion } from "react-icons/ci";
+import {
+  ClassSyllabusFilesSchema,
+  ClassSyllabusTextSchema,
+  ClassTitleSchema,
+} from "@/constants";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const initClassDetails = {
   "class-title": "",
@@ -31,6 +38,7 @@ export default function CreateClassForm() {
     initClassDetailErrors
   );
   const [syllabusType, setSyllabusType] = useState<"Files" | "Text">("Files");
+  const router = useRouter()
 
   // Form Actions
 
@@ -62,6 +70,41 @@ export default function CreateClassForm() {
             ? "Please fill in the required field."
             : "",
       });
+      return;
+    }
+    try {
+      const classTitleRes = ClassTitleSchema.safeParse(
+        classDetails["class-title"]
+      );
+      const classSyllabusRes =
+        syllabusType === "Files"
+          ? ClassSyllabusFilesSchema.safeParse(
+              classDetails["class-syllabus-files"]
+            )
+          : ClassSyllabusTextSchema.safeParse(
+              classDetails["class-syllabus-text"]
+            );
+      if (!classTitleRes.success || !classSyllabusRes.success) {
+        if (!classTitleRes.success) {
+          const issue = classTitleRes.error.issues[0].message;
+          setClassDetailErrors((prev) => ({ ...prev, "class-title": issue }));
+        }
+        if (!classSyllabusRes.success) {
+          const issue = classSyllabusRes.error.issues[0].message;
+          const issueKey =
+            syllabusType === "Files"
+              ? "class-syllabus-files"
+              : "class-syllabus-text";
+          setClassDetailErrors((prev) => ({ ...prev, [issueKey]: issue }));
+        }
+        return;
+      }
+      // Handle class creation
+      toast.success("Class was added to YOUR SEMESTER NAME")
+      handleReset()
+      router.push("/classes")
+    } catch {
+      toast.error("An unknown error occurred");
     }
     // restrictions
     // min 3 class text characters
