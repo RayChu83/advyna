@@ -37,8 +37,10 @@ export default function CreateClassForm() {
   const [classDetailErrors, setClassDetailErrors] = useState(
     initClassDetailErrors
   );
-  const [syllabusType, setSyllabusType] = useState<"Files" | "Text">("Files");
-  const router = useRouter()
+  const [syllabusType, setSyllabusType] = useState<
+    "class-syllabus-text" | "class-syllabus-files"
+  >("class-syllabus-files");
+  const router = useRouter();
 
   // Form Actions
 
@@ -51,25 +53,16 @@ export default function CreateClassForm() {
     e.preventDefault();
     setClassDetailErrors(initClassDetailErrors);
     // CHeck if both class title and syllabus are uploaded
-    if (
-      !classDetails["class-title"] ||
-      (!classDetails["class-syllabus-text"] &&
-        !classDetails["class-syllabus-files"].length)
-    ) {
-      setClassDetailErrors({
+    if (!classDetails["class-title"] || !classDetails[syllabusType]) {
+      setClassDetailErrors((prev) => ({
+        ...prev,
         "class-title": !classDetails["class-title"]
           ? "Please fill in the required field."
           : "",
-        "class-syllabus-files":
-          syllabusType === "Files" &&
-          !classDetails["class-syllabus-files"].length
-            ? "Please fill in the required field."
-            : "",
-        "class-syllabus-text":
-          syllabusType === "Text" && !classDetails["class-syllabus-text"]
-            ? "Please fill in the required field."
-            : "",
-      });
+        [syllabusType]: !classDetails[syllabusType]
+          ? "Please fill in the required field."
+          : "",
+      }));
       return;
     }
     try {
@@ -77,13 +70,9 @@ export default function CreateClassForm() {
         classDetails["class-title"]
       );
       const classSyllabusRes =
-        syllabusType === "Files"
-          ? ClassSyllabusFilesSchema.safeParse(
-              classDetails["class-syllabus-files"]
-            )
-          : ClassSyllabusTextSchema.safeParse(
-              classDetails["class-syllabus-text"]
-            );
+        syllabusType === "class-syllabus-files"
+          ? ClassSyllabusFilesSchema.safeParse(classDetails[syllabusType])
+          : ClassSyllabusTextSchema.safeParse(classDetails[syllabusType]);
       if (!classTitleRes.success || !classSyllabusRes.success) {
         if (!classTitleRes.success) {
           const issue = classTitleRes.error.issues[0].message;
@@ -91,18 +80,14 @@ export default function CreateClassForm() {
         }
         if (!classSyllabusRes.success) {
           const issue = classSyllabusRes.error.issues[0].message;
-          const issueKey =
-            syllabusType === "Files"
-              ? "class-syllabus-files"
-              : "class-syllabus-text";
-          setClassDetailErrors((prev) => ({ ...prev, [issueKey]: issue }));
+          setClassDetailErrors((prev) => ({ ...prev, [syllabusType]: issue }));
         }
         return;
       }
       // Handle class creation
-      toast.success("Class was added to YOUR SEMESTER NAME")
-      handleReset()
-      router.push("/classes")
+      toast.success("Class was added to [YOUR SEMESTER NAME]");
+      handleReset();
+      router.push("/classes");
     } catch {
       toast.error("An unknown error occurred");
     }
@@ -169,24 +154,24 @@ export default function CreateClassForm() {
               <button
                 className={cn(
                   "px-3 py-0.5 rounded-sm text-sm",
-                  syllabusType === "Files"
+                  syllabusType === "class-syllabus-files"
                     ? "bg-zinc-700"
                     : "hover:bg-zinc-700/50 cursor-pointer"
                 )}
                 type="button"
-                onClick={() => setSyllabusType("Files")}
+                onClick={() => setSyllabusType("class-syllabus-files")}
               >
                 File
               </button>
               <button
                 className={cn(
                   "px-3 py-0.5 rounded-sm text-sm",
-                  syllabusType === "Text"
+                  syllabusType === "class-syllabus-text"
                     ? "bg-zinc-700"
                     : "hover:bg-zinc-700/50 cursor-pointer"
                 )}
                 type="button"
-                onClick={() => setSyllabusType("Text")}
+                onClick={() => setSyllabusType("class-syllabus-text")}
               >
                 Text
               </button>
@@ -194,19 +179,19 @@ export default function CreateClassForm() {
           </aside>
         </header>
         <div>
-          {syllabusType === "Files" ? (
+          {syllabusType === "class-syllabus-files" ? (
             <SyllabusUpload
-              files={classDetails["class-syllabus-files"]}
+              files={classDetails[syllabusType]}
               setFiles={(files: File[]) =>
                 setClassDetails((prev) => ({
                   ...prev,
-                  "class-syllabus-files": files,
+                  [syllabusType]: files,
                 }))
               }
               setError={(error) =>
                 setClassDetailErrors((prev) => ({
                   ...prev,
-                  "class-syllabus-files": error,
+                  [syllabusType]: error,
                 }))
               }
             />
@@ -217,15 +202,15 @@ export default function CreateClassForm() {
               setValue={(value) =>
                 setClassDetails((prev) => ({
                   ...prev,
-                  "class-syllabus-text": value,
+                  [syllabusType]: value,
                 }))
               }
-              value={classDetails["class-syllabus-text"]}
-              error={classDetailErrors["class-syllabus-text"]}
+              value={classDetails[syllabusType]}
+              error={classDetailErrors[syllabusType]}
               setError={(error) =>
                 setClassDetailErrors((prev) => ({
                   ...prev,
-                  "class-syllabus-text": error,
+                  [syllabusType]: error,
                 }))
               }
               type="textarea"
@@ -236,32 +221,28 @@ export default function CreateClassForm() {
           )}
           <div className="mt-1 flex items-center justify-between">
             <p className="text-red-400 text-sm">
-              {syllabusType === "Files"
-                ? classDetailErrors["class-syllabus-files"]
-                : classDetailErrors["class-syllabus-text"]}
+              {classDetailErrors[syllabusType]}
             </p>
             <aside className="flex items-center gap-3">
               <p
                 className={cn(
                   "test-sm",
-                  (classDetails["class-syllabus-files"].length > 5 &&
-                    syllabusType === "Files") ||
-                    (classDetails["class-syllabus-text"].length > 10000 &&
-                      syllabusType === "Text")
+                  classDetails[syllabusType].length >
+                    (syllabusType === "class-syllabus-files" ? 5 : 10000)
                     ? "text-red-400"
                     : "text-neutral-300"
                 )}
               >
-                {syllabusType === "Files"
-                  ? `${classDetails["class-syllabus-files"].length} / 5`
-                  : `${classDetails["class-syllabus-text"].length} / 10,000`}
+                {`${classDetails[syllabusType].length} / ${
+                  syllabusType === "class-syllabus-files" ? "5" : "10,000"
+                }`}
               </p>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <CiCircleQuestion className="text-lg" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  {syllabusType === "Files"
+                  {syllabusType === "class-syllabus-files"
                     ? "Must include 1 file (max 5 files)"
                     : "Must be between 100 - 10,000 characters"}
                 </TooltipContent>
@@ -282,9 +263,7 @@ export default function CreateClassForm() {
         <RainbowButton
           variant="default"
           disabled={
-            !classDetails["class-title"] ||
-            (!classDetails["class-syllabus-text"] &&
-              !classDetails["class-syllabus-files"].length)
+            !classDetails["class-title"] || !classDetails[syllabusType].length
           }
           className="disabled:animate-none disabled:pointer-events-none text-base py-4.5 px-3 hover:brightness-90 font-normal"
         >

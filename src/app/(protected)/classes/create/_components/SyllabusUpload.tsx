@@ -1,3 +1,5 @@
+import { Particles } from "@/components/ui/particles";
+import { Ripple } from "@/components/ui/ripple";
 import {
   Tooltip,
   TooltipContent,
@@ -8,8 +10,16 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { BsFileEarmarkText } from "react-icons/bs";
 import { CgClose } from "react-icons/cg";
-import { FaFilePdf } from "react-icons/fa6";
+import { FaFileImage, FaFilePdf } from "react-icons/fa6";
+import { HiUpload } from "react-icons/hi";
+import { PiUploadSimpleBold } from "react-icons/pi";
 import { RxArrowTopRight } from "react-icons/rx";
+import {
+  TbFileTypeDocx,
+  TbFileTypePdf,
+  TbFileTypeTxt,
+  TbFileTypeXml,
+} from "react-icons/tb";
 
 export default function SyllabusUpload({
   files,
@@ -95,9 +105,10 @@ export default function SyllabusUpload({
             ))}
             <label
               htmlFor="class-syllabus"
-              className="flex flex-col gap-4 items-center justify-center w-full text-center p-4 bg-white/20 cursor-pointer transition-all rounded-sm backdrop-blur-2xl hover:brightness-125 focus:brightness-125 active:brightness-125 text-sm outline outline-zinc-500 mb-0"
+              className="flex flex-col gap-4 items-center justify-center w-full text-center p-4 bg-white/20 cursor-pointer transition-all rounded-sm backdrop-blur-2xl hover:brightness-125 focus:brightness-125 active:brightness-125 text-sm outline outline-zinc-500 mb-0 relative"
             >
-              Select more files
+              <span>Select more files</span>
+              <Particles className="absolute w-full h-full top-0 left-0" />
             </label>
             <input
               id="class-syllabus"
@@ -122,13 +133,18 @@ export default function SyllabusUpload({
         <>
           <label
             htmlFor="class-syllabus"
-            className="flex flex-col gap-4 items-center justify-center w-full text-center py-8 px-6 bg-blue-500/10 outline-dashed outline-2 outline-blue-500/75 cursor-pointer transition-all rounded-sm backdrop-blur-2xl hover:brightness-125 focus:brightness-125 active:brightness-125"
+            className="flex flex-col gap-4 items-center justify-center w-full text-center py-8 px-6 bg-blue-500/10 outline-dashed outline-2 outline-blue-500/75 cursor-pointer transition-all rounded-sm backdrop-blur-2xl hover:brightness-125 focus:brightness-125 active:brightness-125 relative overflow-hidden group"
           >
-            <FaFilePdf className="text-6xl" />
+            <PiUploadSimpleBold className="text-6xl" />
+            <Particles
+              className="absolute w-full h-full top-0 left-0 -z-1"
+              quantity={150}
+              staticity={20}
+            />
             <div className="space-y-1">
               <p className="font-black">Drag & drop or browse files</p>
               <small className="tracking-widest text-neutral-300 font-light">
-                Accepts JPEG/JPG, PNG, PDF and TXT files
+                Accepts Images, PDF, Text and Markdown Files
               </small>
             </div>
             <div className="py-2 px-4 rounded-full bg-blue-500 text-sm outline -outline-offset-1 outline-transparent hover:outline-blue-400 transition-all duration-300">
@@ -150,7 +166,7 @@ export default function SyllabusUpload({
                 );
               }
             }}
-            accept="image/jpeg,image/png,application/pdf,text/plain"
+            accept=".jpg,.jpeg,.png,.pdf,.txt,.doc,.docx,.rtf,.md"
           />
         </>
       )}
