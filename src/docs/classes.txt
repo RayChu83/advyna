@@ -1,0 +1,6 @@
+1. User adds class-title (between 3-50 characters) and class syllabus in the form of text (100-10,000 characters) or files (accept=".jpg,.jpeg,.png,.pdf,.txt,.doc,.docx,.rtf,.md")
+    In the case user uploads files as their syllabus:
+        1. Call a route handler to generate a Presigned URL (URL that allows for upload to S3 bucket for a minimal amount of time)
+        2. Send route handler to Client-side to be called (Server side won't allow for files more than 4.5MB on the payload)
+        3. Upload files from the front-end using the Presigned URL
+        4. Return URL of the file

@@ -27,8 +27,8 @@ export const ClassSyllabusTextSchema = z
   .min(100, "Syllabus must be at least 100 characters")
   .max(10_000, "Syllabus must be no more than 10,000 characters");
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_FILE_TYPES = [
+export const MAX_FILE_SIZE = 5 * 1024 * 1024;
+export const ALLOWED_FILE_TYPES = [
   "image/jpeg",
   "image/png",
   "application/pdf",
@@ -37,7 +37,12 @@ const ALLOWED_FILE_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   "application/rtf",
   "text/markdown",
-];
+] as const;
+
+type AllowedFileType = (typeof ALLOWED_FILE_TYPES)[number];
+
+export const isAllowedFileType = (type: string): type is AllowedFileType =>
+  ALLOWED_FILE_TYPES.includes(type as AllowedFileType);
 
 export const ClassSyllabusFilesSchema = z
   .array(
@@ -48,7 +53,7 @@ export const ClassSyllabusFilesSchema = z
         "Each file must be less than 5MB"
       )
       .refine(
-        (file) => ALLOWED_FILE_TYPES.includes(file.type),
+        (file) => isAllowedFileType(file.type),
         "Your file type is not supported"
       )
   )

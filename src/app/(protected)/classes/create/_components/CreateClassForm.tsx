@@ -42,6 +42,43 @@ export default function CreateClassForm() {
   >("class-syllabus-files");
   const router = useRouter();
 
+  const uploadFile = async (file: File) => {
+    try {
+      const preSignedUrlRes = await fetch("/api/supabase/syllabusUpload", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type,
+          size: file.size,
+        }),
+      });
+      if (!preSignedUrlRes.ok) {
+        toast.error("Failed to fetch pre-signed URL");
+        return;
+      }
+      const { url, filePath } = await preSignedUrlRes.json();
+
+      const uploadRes = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
+
+      if (!uploadRes.ok) {
+        toast.error("Failed to upload file");
+        return;
+      }
+      return filePath;
+    } catch {
+      toast.error("Something went wrong when uploading your file", {
+        description: file.name,
+      });
+    }
+  };
+
   // Form Actions
 
   const handleReset = () => {
@@ -73,6 +110,7 @@ export default function CreateClassForm() {
         syllabusType === "class-syllabus-files"
           ? ClassSyllabusFilesSchema.safeParse(classDetails[syllabusType])
           : ClassSyllabusTextSchema.safeParse(classDetails[syllabusType]);
+
       if (!classTitleRes.success || !classSyllabusRes.success) {
         if (!classTitleRes.success) {
           const issue = classTitleRes.error.issues[0].message;
@@ -84,10 +122,15 @@ export default function CreateClassForm() {
         }
         return;
       }
-      // Handle class creation
-      toast.success("Class was added to [YOUR SEMESTER NAME]");
-      handleReset();
-      router.push("/classes");
+
+      // Upload files to S3
+      if (syllabusType === "class-syllabus-files") {
+        classDetails["class-syllabus-files"].forEach(uploadFile);
+      }
+
+      toast.success(`Class ${classDetails["class-title"]} has been created`);
+      // handleReset();
+      // router.push("/classes");
     } catch {
       toast.error("An unknown error occurred");
     }
@@ -98,7 +141,12 @@ export default function CreateClassForm() {
   };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={(e) => handleSubmit(e)}>
+    <form
+      className="flex flex-col gap-4"
+      onSubmit={(e) => {
+        handleSubmit(e);
+      }}
+    >
       <header>
         <h1 className="text-2xl font-bold tracking-wide text-neutral-200">
           Add your Class
@@ -265,9 +313,28 @@ export default function CreateClassForm() {
           disabled={
             !classDetails["class-title"] || !classDetails[syllabusType].length
           }
-          className="disabled:animate-none disabled:pointer-events-none text-base py-4.5 px-3 hover:brightness-90 font-normal"
+          className="disabled:animate-none disabled:pointer-events-none text-base py-4.5 px-3 hover:brightness-90 font-normal flex items-center gap-3"
         >
-          Continue
+          <span>Continue</span>
+          <div role="status">
+            <svg
+              aria-hidden="true"
+              className="size-4 text-neutral-tertiary animate-spin fill-brand"
+              viewBox="0 0 100 101"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="#000"
+              />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="#FFF"
+              />
+            </svg>
+            <span className="sr-only">Loading...</span>
+          </div>
         </RainbowButton>
       </div>
     </form>

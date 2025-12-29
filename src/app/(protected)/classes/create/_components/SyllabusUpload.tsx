@@ -1,5 +1,5 @@
+"use client";
 import { Particles } from "@/components/ui/particles";
-import { Ripple } from "@/components/ui/ripple";
 import {
   Tooltip,
   TooltipContent,
@@ -10,16 +10,8 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { BsFileEarmarkText } from "react-icons/bs";
 import { CgClose } from "react-icons/cg";
-import { FaFileImage, FaFilePdf } from "react-icons/fa6";
-import { HiUpload } from "react-icons/hi";
 import { PiUploadSimpleBold } from "react-icons/pi";
 import { RxArrowTopRight } from "react-icons/rx";
-import {
-  TbFileTypeDocx,
-  TbFileTypePdf,
-  TbFileTypeTxt,
-  TbFileTypeXml,
-} from "react-icons/tb";
 
 export default function SyllabusUpload({
   files,

@@ -1,0 +1,74 @@
+import { NextResponse } from "next/server";
+import z from "zod";
+import { v4 as uuidv4 } from "uuid";
+import { createClient } from "@supabase/supabase-js";
+import { isAllowedFileType, MAX_FILE_SIZE } from "@/constants";
+
+const uploadRequestSchema = z.object({
+  fileName: z.string(),
+  contentType: z.string(),
+  size: z.number(),
+});
+
+// create supabase client
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SECRET_KEY!
+);
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const bodyParsed = uploadRequestSchema.safeParse(body);
+
+    if (!bodyParsed.success) {
+      return NextResponse.json(
+        { error: "Request body was invalid" },
+        { status: 400 }
+      );
+    }
+
+    const { contentType, fileName, size } = bodyParsed.data;
+
+    if (size > MAX_FILE_SIZE) {
+      // file size > 5MB
+      return NextResponse.json(
+        { error: "File size was too large" },
+        { status: 400 }
+      );
+    }
+    if (!isAllowedFileType(contentType)) {
+      // File type validation on MME types
+      return NextResponse.json(
+        { error: "File type is not supported" },
+        { status: 400 }
+      );
+    }
+
+    // Unique upload path on bucket
+    const filePath = `${uuidv4()}-${fileName}`;
+
+    // create a presigned url (3 mins only) to send to Client to upload images
+    // Why? NextJS allows only 4.5MB of files to be within a Request Body
+    const { data, error } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET!)
+      .createSignedUploadUrl(filePath);
+
+    // If error throw error
+    if (error) {
+      console.log(error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Return url with file path
+    return NextResponse.json(
+      { url: data.signedUrl, filePath },
+      { status: 200 }
+    );
+  } catch {
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
