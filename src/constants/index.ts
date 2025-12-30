@@ -65,4 +65,5 @@ export type FILE_TYPE = {
   upload: File;
   status: "idle" | "loading" | "uploaded" | "fail";
   loadPercent: number;
+  key: string;
 };

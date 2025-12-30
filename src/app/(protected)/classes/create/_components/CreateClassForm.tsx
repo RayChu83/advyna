@@ -58,9 +58,9 @@ export default function CreateClassForm() {
         toast.error("Failed to fetch pre-signed URL");
         return;
       }
-      const { url } = await preSignedUrlRes.json();
+      const { url, filePath } = await preSignedUrlRes.json();
 
-      const uploadRes = await axios.put(url, file.upload, {
+      await axios.put(url, file.upload, {
         headers: {
           "Content-Type": file.upload.type,
         },
@@ -88,13 +88,12 @@ export default function CreateClassForm() {
         ...prev,
         "class-syllabus-files": prev["class-syllabus-files"].map((prevFile) =>
           prevFile.upload === file.upload
-            ? { ...prevFile, status: "uploaded", loadPercent: 0 }
+            ? { ...prevFile, status: "uploaded", loadPercent: 0, key: filePath }
             : prevFile
         ),
       }));
 
-      const { Key } = uploadRes.data;
-      return Key;
+      return filePath;
     } catch (err) {
       console.log(err);
       toast.error("Something went wrong when uploading your file", {
@@ -162,7 +161,11 @@ export default function CreateClassForm() {
 
       // Upload files to S3
       if (syllabusType === "class-syllabus-files") {
-        for (const file of classDetails["class-syllabus-files"]) {
+        // files which have failed to upload (Status: !== uploaded)
+        const filteredFiles = classDetails["class-syllabus-files"].filter(
+          (file) => file.status !== "uploaded"
+        );
+        for (const file of filteredFiles) {
           const key = await uploadFile(file);
           if (!key) {
             // error message is thrown in the uploadFile func

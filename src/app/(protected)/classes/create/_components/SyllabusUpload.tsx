@@ -27,6 +27,18 @@ export default function SyllabusUpload({
     return files.map((file) => URL.createObjectURL(file.upload));
   }, [files]);
 
+  const removeSyllabus = async (key: string) => {
+    const removeRes = await fetch("/api/supabase/syllabusUpload", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        fileName: key,
+      }),
+    });
+    console.log(removeRes.ok);
+    console.log(await removeRes.json());
+  };
+
   return (
     <div className="w-full">
       {files.length ? (
@@ -39,6 +51,7 @@ export default function SyllabusUpload({
               >
                 <section className="flex sm:items-center sm:flex-row flex-col gap-x-6 gap-y-4">
                   {file.upload.type.startsWith("image/") ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={fileObjectURLs[index]}
                       alt={file.upload.name}
@@ -88,6 +101,9 @@ export default function SyllabusUpload({
                                 : ""
                             );
                             URL.revokeObjectURL(fileObjectURLs[index]);
+                            if (file.key) {
+                              removeSyllabus(file.key);
+                            }
                           }}
                         >
                           <CgClose className="text-xl" />
@@ -142,6 +158,7 @@ export default function SyllabusUpload({
                       upload: file,
                       status: "idle",
                       loadPercent: 0,
+                      key: "",
                     })
                   );
 
@@ -191,6 +208,7 @@ export default function SyllabusUpload({
                     upload: file,
                     status: "idle",
                     loadPercent: 0,
+                    key: "",
                   })
                 );
                 setFiles(updatedFiles);
@@ -206,4 +224,3 @@ export default function SyllabusUpload({
     </div>
   );
 }
-// MAGIC UI

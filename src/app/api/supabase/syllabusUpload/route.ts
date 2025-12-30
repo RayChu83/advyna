@@ -56,7 +56,6 @@ export async function POST(request: Request) {
 
     // If error throw error
     if (error) {
-      console.log(error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
@@ -65,6 +64,42 @@ export async function POST(request: Request) {
       { url: data.signedUrl, filePath },
       { status: 200 }
     );
+  } catch {
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
+// zod file name validation with reg ex
+const fileNameSchema = z
+  .string()
+  .regex(/^[a-f0-9-]{36}-[a-zA-Z0-9._-]+$/, "Invalid file key format");
+
+export async function DELETE(request: Request) {
+  try {
+    // deconstruct body to get fileName and parse with Zod
+    const { fileName } = await request.json();
+    const parseFileName = fileNameSchema.safeParse(fileName);
+
+    if (!parseFileName.success) {
+      // if failed parsed, return error code 400, body invalid
+      return NextResponse.json(
+        { error: "Request body was invalid" },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET!)
+      .remove([fileName]);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ fileName: data[0].name }, { status: 200 });
   } catch {
     return NextResponse.json(
       { error: "Internal Server Error" },
