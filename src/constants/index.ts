@@ -59,3 +59,10 @@ export const ClassSyllabusFilesSchema = z
   )
   .min(1, "At least one file is required")
   .max(5, "You can only upload up to 5 files");
+
+// TYPEs
+export type FILE_TYPE = {
+  upload: File;
+  status: "idle" | "loading" | "uploaded" | "fail";
+  loadPercent: number;
+};

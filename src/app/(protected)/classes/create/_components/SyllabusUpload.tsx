@@ -5,7 +5,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { formatFileSize } from "@/constants";
+import { FILE_TYPE, formatFileSize } from "@/constants";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useMemo } from "react";
 import { BsFileEarmarkText } from "react-icons/bs";
@@ -18,12 +19,12 @@ export default function SyllabusUpload({
   setFiles,
   setError,
 }: {
-  files: File[];
-  setFiles: (files: File[]) => void;
+  files: FILE_TYPE[];
+  setFiles: (files: FILE_TYPE[]) => void;
   setError: (error: string) => void;
 }) {
   const fileObjectURLs = useMemo(() => {
-    return files.map((file) => URL.createObjectURL(file));
+    return files.map((file) => URL.createObjectURL(file.upload));
   }, [files]);
 
   return (
@@ -34,65 +35,91 @@ export default function SyllabusUpload({
             {files.map((file, index) => (
               <li
                 key={index}
-                className="flex sm:items-center sm:flex-row flex-col gap-x-6 gap-y-4 p-3 rounded-sm bg-white/5 outline outline-zinc-700 relative"
+                className="flex flex-col gap-2 p-3 rounded-sm bg-white/5 outline outline-zinc-700 relative"
               >
-                {file.type.startsWith("image/") ? (
-                  <img
-                    src={fileObjectURLs[index]}
-                    alt={file.name}
-                    className="sm:size-12 size-16 object-cover rounded"
-                  />
-                ) : (
-                  <BsFileEarmarkText className="sm:text-5xl text-[64px]" />
-                )}
-                <div className="sm:grid grid-cols-8 gap-3 w-full">
-                  <p className="col-span-4 overflow-hidden text-nowrap whitespace-nowrap truncate text-sm text-neutral-200">
-                    {file.name}
-                  </p>
-                  <p className="col-span-2 text-sm font-extralight text-neutral-300">
-                    {file.type}
-                  </p>
-                  <p className="col-span-2 sm:text-end text-sm font-extralight text-neutral-300">
-                    {formatFileSize(file.size)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 sm:static absolute top-3 right-3">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        className="p-2 bg-white/5 hover:bg-red-500/25 cursor-pointer rounded-md transition-all duration-300"
-                        type="button"
-                        onClick={() => {
-                          const updatedFiles = files.filter(
-                            (_, i) => i !== index
-                          );
-                          setFiles(updatedFiles);
-                          setError(
-                            updatedFiles.length > 5
-                              ? "Maximum file limit reached"
-                              : ""
-                          );
-                          URL.revokeObjectURL(fileObjectURLs[index]);
-                        }}
-                      >
-                        <CgClose className="text-xl" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>Remove</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        className="p-2 bg-white/5 hover:bg-blue-500/25 cursor-pointer rounded-md transition-all duration-300"
-                        href={fileObjectURLs[index]}
-                        target="_blank"
-                      >
-                        <RxArrowTopRight className="text-xl" />
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent>Open in new tab</TooltipContent>
-                  </Tooltip>
-                </div>
+                <section className="flex sm:items-center sm:flex-row flex-col gap-x-6 gap-y-4">
+                  {file.upload.type.startsWith("image/") ? (
+                    <img
+                      src={fileObjectURLs[index]}
+                      alt={file.upload.name}
+                      className="sm:size-12 size-16 object-cover rounded"
+                    />
+                  ) : (
+                    <BsFileEarmarkText className="sm:text-5xl text-[64px]" />
+                  )}
+                  <div className="sm:grid grid-cols-8 gap-3 w-full">
+                    <p className="col-span-4 overflow-hidden text-nowrap whitespace-nowrap truncate text-sm text-neutral-200">
+                      {file.upload.name}
+                    </p>
+                    <p className="col-span-2 text-sm font-extralight text-neutral-300">
+                      {file.upload.type}
+                    </p>
+                    <p
+                      className={cn(
+                        "col-span-2 sm:text-end text-sm font-extralight",
+                        file.status === "uploaded"
+                          ? "text-emerald-500"
+                          : file.status === "fail"
+                          ? "text-red-500"
+                          : "text-neutral-300"
+                      )}
+                    >
+                      {file.status === "uploaded"
+                        ? "Uploaded"
+                        : file.status === "fail"
+                        ? "Failed"
+                        : formatFileSize(file.upload.size)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 sm:static absolute top-3 right-3">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="p-2 bg-white/5 hover:bg-red-500/25 cursor-pointer rounded-md transition-all duration-300"
+                          type="button"
+                          onClick={() => {
+                            const updatedFiles = files.filter(
+                              (_, i) => i !== index
+                            );
+                            setFiles(updatedFiles);
+                            setError(
+                              updatedFiles.length > 5
+                                ? "Maximum file limit reached"
+                                : ""
+                            );
+                            URL.revokeObjectURL(fileObjectURLs[index]);
+                          }}
+                        >
+                          <CgClose className="text-xl" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Remove</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          className="p-2 bg-white/5 hover:bg-blue-500/25 cursor-pointer rounded-md transition-all duration-300"
+                          href={fileObjectURLs[index]}
+                          target="_blank"
+                        >
+                          <RxArrowTopRight className="text-xl" />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>Open in new tab</TooltipContent>
+                    </Tooltip>
+                  </div>
+                </section>
+                {file.status === "loading" ? (
+                  <section className="flex items-center justify-between gap-4">
+                    <div
+                      className="h-[2] bg-emerald-500 rounded-full"
+                      style={{ width: `${file.loadPercent}%` }}
+                    />
+                    <p className="text-emerald-500 font-black text-sm">
+                      {file.loadPercent}%
+                    </p>
+                  </section>
+                ) : null}
               </li>
             ))}
             <label
@@ -110,7 +137,15 @@ export default function SyllabusUpload({
               onChange={(e) => {
                 // Zod Type Validation in the future (HTML INPUT ACCEPT Not Good Enough)
                 if (e.target.files) {
-                  const updatedFiles = [...files, ...e.target.files];
+                  const newFiles: FILE_TYPE[] = [...e.target.files].map(
+                    (file): FILE_TYPE => ({
+                      upload: file,
+                      status: "idle",
+                      loadPercent: 0,
+                    })
+                  );
+
+                  const updatedFiles = [...files, ...newFiles];
                   setFiles(updatedFiles);
                   setError(
                     updatedFiles.length > 5 ? "Maximum file limit reached" : ""
@@ -151,7 +186,13 @@ export default function SyllabusUpload({
             onChange={(e) => {
               // Zod Type Validation in the future (HTML INPUT ACCEPT Not Good Enough)
               if (e.target.files) {
-                const updatedFiles = [...e.target.files];
+                const updatedFiles: FILE_TYPE[] = [...e.target.files].map(
+                  (file) => ({
+                    upload: file,
+                    status: "idle",
+                    loadPercent: 0,
+                  })
+                );
                 setFiles(updatedFiles);
                 setError(
                   updatedFiles.length > 5 ? "Maximum file limit reached" : ""

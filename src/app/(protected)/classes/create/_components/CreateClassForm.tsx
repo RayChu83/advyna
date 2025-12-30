@@ -12,9 +12,10 @@ import {
   ClassSyllabusFilesSchema,
   ClassSyllabusTextSchema,
   ClassTitleSchema,
+  FILE_TYPE,
 } from "@/constants";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const initClassDetails = {
   "class-title": "",
@@ -32,7 +33,7 @@ export default function CreateClassForm() {
   const [classDetails, setClassDetails] = useState<{
     "class-title": string;
     "class-syllabus-text": string;
-    "class-syllabus-files": File[];
+    "class-syllabus-files": FILE_TYPE[];
   }>(initClassDetails);
   const [classDetailErrors, setClassDetailErrors] = useState(
     initClassDetailErrors
@@ -40,42 +41,74 @@ export default function CreateClassForm() {
   const [syllabusType, setSyllabusType] = useState<
     "class-syllabus-text" | "class-syllabus-files"
   >("class-syllabus-files");
-  const router = useRouter();
+  const [status, setStatus] = useState<"idle" | "submitting">("idle");
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (file: FILE_TYPE) => {
     try {
       const preSignedUrlRes = await fetch("/api/supabase/syllabusUpload", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          fileName: file.name,
-          contentType: file.type,
-          size: file.size,
+          fileName: file.upload.name,
+          contentType: file.upload.type,
+          size: file.upload.size,
         }),
       });
       if (!preSignedUrlRes.ok) {
         toast.error("Failed to fetch pre-signed URL");
         return;
       }
-      const { url, filePath } = await preSignedUrlRes.json();
+      const { url } = await preSignedUrlRes.json();
 
-      const uploadRes = await fetch(url, {
-        method: "PUT",
+      const uploadRes = await axios.put(url, file.upload, {
         headers: {
-          "Content-Type": file.type,
+          "Content-Type": file.upload.type,
         },
-        body: file,
+        onUploadProgress: (progressEvent) => {
+          if (!progressEvent.total) return;
+
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+
+          setClassDetails((prev) => ({
+            ...prev,
+            "class-syllabus-files": prev["class-syllabus-files"].map(
+              (prevFile) =>
+                prevFile.upload === file.upload
+                  ? { ...prevFile, status: "loading", loadPercent: percent }
+                  : prevFile
+            ),
+          }));
+        },
       });
 
-      if (!uploadRes.ok) {
-        toast.error("Failed to upload file");
-        return;
-      }
-      return filePath;
-    } catch {
+      // Mark the file as uploaded
+      setClassDetails((prev) => ({
+        ...prev,
+        "class-syllabus-files": prev["class-syllabus-files"].map((prevFile) =>
+          prevFile.upload === file.upload
+            ? { ...prevFile, status: "uploaded", loadPercent: 0 }
+            : prevFile
+        ),
+      }));
+
+      const { Key } = uploadRes.data;
+      return Key;
+    } catch (err) {
+      console.log(err);
       toast.error("Something went wrong when uploading your file", {
-        description: file.name,
+        description: file.upload.name,
       });
+      setClassDetails((prev) => ({
+        ...prev,
+        "class-syllabus-files": prev["class-syllabus-files"].map((prevFile) =>
+          prevFile.upload === file.upload
+            ? { ...prevFile, status: "fail", loadPercent: 0 }
+            : prevFile
+        ),
+      }));
+      return null;
     }
   };
 
@@ -86,10 +119,10 @@ export default function CreateClassForm() {
     setClassDetailErrors(initClassDetailErrors);
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setClassDetailErrors(initClassDetailErrors);
-    // CHeck if both class title and syllabus are uploaded
+    // CHeck if both class title and syllabus are uploaded (ensure no missing fields)
     if (!classDetails["class-title"] || !classDetails[syllabusType]) {
       setClassDetailErrors((prev) => ({
         ...prev,
@@ -108,7 +141,9 @@ export default function CreateClassForm() {
       );
       const classSyllabusRes =
         syllabusType === "class-syllabus-files"
-          ? ClassSyllabusFilesSchema.safeParse(classDetails[syllabusType])
+          ? ClassSyllabusFilesSchema.safeParse(
+              classDetails[syllabusType].map((file) => file.upload)
+            )
           : ClassSyllabusTextSchema.safeParse(classDetails[syllabusType]);
 
       if (!classTitleRes.success || !classSyllabusRes.success) {
@@ -123,16 +158,29 @@ export default function CreateClassForm() {
         return;
       }
 
+      const syllabusKeys = [];
+
       // Upload files to S3
       if (syllabusType === "class-syllabus-files") {
-        classDetails["class-syllabus-files"].forEach(uploadFile);
+        for (const file of classDetails["class-syllabus-files"]) {
+          const key = await uploadFile(file);
+          if (!key) {
+            // error message is thrown in the uploadFile func
+            return;
+          }
+          syllabusKeys.push(key);
+        }
       }
+
+      // Create a class
 
       toast.success(`Class ${classDetails["class-title"]} has been created`);
       // handleReset();
       // router.push("/classes");
     } catch {
       toast.error("An unknown error occurred");
+    } finally {
+      setStatus("idle");
     }
     // restrictions
     // min 3 class text characters
@@ -144,6 +192,7 @@ export default function CreateClassForm() {
     <form
       className="flex flex-col gap-4"
       onSubmit={(e) => {
+        setStatus("submitting");
         handleSubmit(e);
       }}
     >
@@ -230,7 +279,7 @@ export default function CreateClassForm() {
           {syllabusType === "class-syllabus-files" ? (
             <SyllabusUpload
               files={classDetails[syllabusType]}
-              setFiles={(files: File[]) =>
+              setFiles={(files: FILE_TYPE[]) =>
                 setClassDetails((prev) => ({
                   ...prev,
                   [syllabusType]: files,
@@ -300,42 +349,49 @@ export default function CreateClassForm() {
         </div>
       </div>
       {/* <SyllabusUpload /> */}
-      <div className="flex items-center gap-4">
-        <button
-          className="py-2 px-3 rounded-md bg-zinc-800 outline outline-zinc-700 cursor-pointer hover:brightness-110 transition-all"
-          type="button"
-          onClick={handleReset}
-        >
-          Reset
-        </button>
-        <RainbowButton
-          variant="default"
-          disabled={
-            !classDetails["class-title"] || !classDetails[syllabusType].length
-          }
-          className="disabled:animate-none disabled:pointer-events-none text-base py-4.5 px-3 hover:brightness-90 font-normal flex items-center gap-3"
-        >
-          <span>Continue</span>
-          <div role="status">
-            <svg
-              aria-hidden="true"
-              className="size-4 text-neutral-tertiary animate-spin fill-brand"
-              viewBox="0 0 100 101"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+      <div className="flex items-center justify-between">
+        <aside className="space-x-4 flex">
+          <button
+            className="py-2 px-3 rounded-md bg-zinc-800 outline outline-zinc-700 cursor-pointer hover:brightness-110 transition-all"
+            type="button"
+            onClick={handleReset}
+          >
+            Reset
+          </button>
+          <RainbowButton
+            variant="default"
+            disabled={
+              !classDetails["class-title"] ||
+              !classDetails[syllabusType].length ||
+              status === "submitting"
+            }
+            className="disabled:animate-none disabled:pointer-events-none text-base py-4.5 px-3 hover:brightness-90 font-normal flex items-center gap-3"
+          >
+            <span>{status === "idle" ? "Continue" : "Loading"}</span>
+            <div
+              role="status"
+              className={cn(status === "idle" ? "hidden" : "block")}
             >
-              <path
-                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="#000"
-              />
-              <path
-                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="#FFF"
-              />
-            </svg>
-            <span className="sr-only">Loading...</span>
-          </div>
-        </RainbowButton>
+              <svg
+                aria-hidden="true"
+                className="size-4 text-neutral-tertiary animate-spin fill-brand"
+                viewBox="0 0 100 101"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                  fill="#000"
+                />
+                <path
+                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                  fill="#FFF"
+                />
+              </svg>
+              <span className="sr-only">Loading...</span>
+            </div>
+          </RainbowButton>
+        </aside>
       </div>
     </form>
   );
