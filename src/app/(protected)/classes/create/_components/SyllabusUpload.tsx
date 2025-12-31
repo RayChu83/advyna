@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
 import { Particles } from "@/components/ui/particles";
 import {
   Tooltip,
@@ -55,7 +56,7 @@ export default function SyllabusUpload({
                     <img
                       src={fileObjectURLs[index]}
                       alt={file.upload.name}
-                      className="sm:size-12 size-16 object-cover rounded"
+                      className="sm:size-12 size-16 object-cover rounded bg-white/5"
                     />
                   ) : (
                     <BsFileEarmarkText className="sm:text-5xl text-[64px]" />

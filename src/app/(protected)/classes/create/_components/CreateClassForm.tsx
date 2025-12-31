@@ -16,6 +16,7 @@ import {
 } from "@/constants";
 import { toast } from "sonner";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const initClassDetails = {
   "class-title": "",
@@ -30,6 +31,7 @@ const initClassDetailErrors = {
 };
 
 export default function CreateClassForm() {
+  const router = useRouter();
   const [classDetails, setClassDetails] = useState<{
     "class-title": string;
     "class-syllabus-text": string;
@@ -178,8 +180,8 @@ export default function CreateClassForm() {
       // Create a class
 
       toast.success(`Class ${classDetails["class-title"]} has been created`);
-      // handleReset();
-      // router.push("/classes");
+      handleReset();
+      router.push("/classes");
     } catch {
       toast.error("An unknown error occurred");
     } finally {
