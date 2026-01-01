@@ -67,3 +67,54 @@ export type FILE_TYPE = {
   loadPercent: number;
   key: string;
 };
+
+export const defaultSemesters = [
+  {
+    id: "986a886f-229b-4048-a4b0-de6aaf1fa2df",
+    title: "Semester 1",
+    grade: "Lower Freshman",
+    classes: [
+      "Intro to Computer Science",
+      "Intro to Anthropology",
+      "First Year Seminar",
+      "Classical Mythology",
+      "Calculus I",
+    ],
+  },
+  {
+    id: "c21e9c8a-47d6-4e9b-8f41-6b0b0f0f0b11",
+    title: "Semester 2",
+    grade: "Upper Freshman",
+    classes: [
+      "Data Structures",
+      "College Writing II",
+      "General Psychology",
+      "Discrete Mathematics",
+      "Introduction to Philosophy",
+    ],
+  },
+  {
+    id: "f9a2c7b4-9d41-4c32-8b75-2c71c3a8e921",
+    title: "Semester 3",
+    grade: "Lower Sophomore",
+    classes: [
+      "Computer Organization",
+      "Linear Algebra",
+      "Statistics for the Social Sciences",
+      "World History to 1500",
+      "Public Speaking",
+    ],
+  },
+  {
+    id: "a3b7e12d-5f64-4d91-9c28-91e6d43e8c77",
+    title: "Semester 4",
+    grade: "Upper Sophomore",
+    classes: [
+      "Algorithms",
+      "Operating Systems",
+      "Database Systems",
+      "Ethics in Technology",
+      "Technical Writing",
+    ],
+  },
+];

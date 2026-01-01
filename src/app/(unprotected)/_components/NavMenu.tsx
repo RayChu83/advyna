@@ -31,9 +31,9 @@ export default function NavMenu() {
   return (
     <motion.nav>
       <motion.header
-        className={`py-4 px-6 flex items-center justify-between gap-8 fixed w-full top-0 z-50 transition-all duration-700 border-b border border-zinc-800 ${
+        className={`py-4 px-6 flex items-center justify-between gap-8 fixed w-full top-0 z-50 transition-all duration-700 border-b border border-transparent ${
           scrolled || mobileNavOpen
-            ? " bg-[#18181b]/75 inset-shadow-sm inset-shadow-black/10 backdrop-blur-lg"
+            ? " bg-[#18181b]/75 inset-shadow-sm inset-shadow-black/10 backdrop-blur-lg border-zinc-800"
             : ""
         }`}
       >
