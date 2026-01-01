@@ -54,7 +54,7 @@ export default function Semesters() {
         <header className="mb-8 flex flex-col gap-1.5 w-fit">
           <AnimatedShinyText
             className="text-neutral-400 m-0"
-            shimmerWidth={100}
+            shimmerWidth={200}
           >
             <span className="font-bold tracking-tight">Hunter College</span>
           </AnimatedShinyText>
@@ -77,7 +77,7 @@ export default function Semesters() {
         <div className="grid 2xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
           {semesters.map((semester, i) => (
             <section
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-sm p-4 group transition-all duration-300  hover:scale-[1.02] ease-in-out"
+              className="w-full bg-zinc-900 rounded-md p-4 group transition-all duration-300  hover:scale-[1.02] ease-in-out border-b-3 border-r-3 border-emerald-600 hover:border-emerald-500"
               key={i}
             >
               <header className="flex items-center justify-between mb-4">
@@ -90,7 +90,7 @@ export default function Semesters() {
                   </Link>
                   <AnimatedShinyText
                     className="text-neutral-400"
-                    shimmerWidth={100}
+                    shimmerWidth={200}
                   >
                     <span className="text-sm font-medium">
                       {semester.grade}
