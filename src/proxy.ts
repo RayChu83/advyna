@@ -13,7 +13,6 @@ export async function proxy(request: NextRequest) {
     // Refresh the session if needed
     const {
       data: { session },
-      error,
     } = await supabase.auth.getSession();
 
     // Define protected routes
@@ -23,6 +22,7 @@ export async function proxy(request: NextRequest) {
       "/calendar",
       "/classes",
       "/semesters",
+      "/profile/set-up",
     ];
     const isProtectedRoute = protectedRoutes.some((route) =>
       request.nextUrl.pathname.startsWith(route)
@@ -39,8 +39,28 @@ export async function proxy(request: NextRequest) {
       request.nextUrl.pathname.startsWith(route)
     );
 
-    if (isAuthRoute && session) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    if (session && (isProtectedRoute || isAuthRoute)) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        return NextResponse.redirect(new URL("/sign-in", request.url));
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!profile && !request.nextUrl.pathname.startsWith("/profile/set-up")) {
+        return NextResponse.redirect(new URL("/profile/set-up", request.url));
+      }
+
+      if (profile && request.nextUrl.pathname.startsWith("/profile/set-up")) {
+        return NextResponse.redirect(new URL("/profile", request.url));
+      }
     }
 
     return response;
@@ -52,13 +72,5 @@ export async function proxy(request: NextRequest) {
 
 // Configure which routes use this middleware
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!_next|api|favicon.ico|robots.txt|sitemap.xml).*)"],
 };
