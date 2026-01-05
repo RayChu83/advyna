@@ -4,20 +4,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import NavLink from "../../../components/ui/NavLink";
+import NavLink from "../../../../components/ui/NavLink";
 import { AiOutlineMenu } from "react-icons/ai";
-import { Tooltip, TooltipContent } from "../../../components/ui/tooltip";
+import { Tooltip, TooltipContent } from "../../../../components/ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { GoArrowRight } from "react-icons/go";
 import { cn } from "@/lib/utils";
 import { RainbowButton } from "@/components/ui/rainbow-button";
+import { supabase } from "@/lib/supabaseClient";
+import { toast } from "sonner";
 
 export default function NavMenu() {
   // state used for determining whether the user scrolled (navbar white background)
   const [scrolled, setScrolled] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { scrollYProgress } = useScroll();
   const pathname = usePathname();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     const hasScroll =
@@ -25,6 +27,19 @@ export default function NavMenu() {
     // if scroll position is 0.02 of the screen and there is a scrollbar on page, set scrolled = true
     setScrolled(latest > 0.02 && hasScroll);
   });
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        toast.error("Failed to sign out", { description: error.message });
+      }
+    } catch {
+      toast.error("Failed to sign out", {
+        description: "An unexpected error had occurred. Please try again",
+      });
+    }
+  };
 
   return (
     <motion.nav>
@@ -88,6 +103,7 @@ export default function NavMenu() {
                 "rounded-full hover:brightness-90 text-sm px-3",
                 mobileNavOpen ? "md:opacity-100 opacity-0" : null
               )}
+              onClick={handleSignOut}
             >
               Sign out
             </RainbowButton>
@@ -109,6 +125,7 @@ export default function NavMenu() {
         pathname={pathname}
         mobileNavOpen={mobileNavOpen}
         setMobileNavOpen={setMobileNavOpen}
+        handleSignOut={handleSignOut}
       />
     </motion.nav>
   );
@@ -117,10 +134,12 @@ function MobileNavMenu({
   pathname,
   mobileNavOpen,
   setMobileNavOpen,
+  handleSignOut,
 }: {
   pathname: string;
   mobileNavOpen: boolean;
   setMobileNavOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleSignOut: () => void;
 }) {
   return (
     <section
@@ -185,6 +204,7 @@ function MobileNavMenu({
       <div className="p-4 w-full">
         <RainbowButton
           className={cn("p-5 rounded-full hover:brightness-90 w-full")}
+          onClick={handleSignOut}
         >
           Sign out
         </RainbowButton>

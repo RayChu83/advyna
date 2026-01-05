@@ -1,5 +1,4 @@
 "use client";
-import { LightRays } from "@/components/ui/light-rays";
 import { Particles } from "@/components/ui/particles";
 import { defaultSemesters } from "@/constants";
 import Link from "next/link";
@@ -8,6 +7,8 @@ import { GoArrowLeft, GoArrowRight } from "react-icons/go";
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
+import { Highlighter } from "@/components/ui/highlighter";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 
 const semesters = defaultSemesters;
 const TABS = ["All", "Classes", "Calendar", "Deadlines"] as const;
@@ -23,12 +24,12 @@ export default function SemesterDetails() {
   return (
     <>
       <main className="mt-17 flex flex-col gap-2 max-w-480 mx-auto p-6">
-        <header className="mb-8 flex flex-col gap-1.5 w-fit">
+        <header className="mb-4 flex flex-col gap-1.5 w-fit">
           <Link
             href="/semesters"
             className="text-neutral-400 hover:text-neutral-300 flex items-center gap-2 transition-all font-semibold tracking-tight"
           >
-            <GoArrowLeft /> <span>Return to all semesters</span>
+            <GoArrowLeft /> <span>Return to Semesters</span>
           </Link>
           <h1 className="sm:text-5xl text-4xl tracking-tight font-black text-neutral-200 mb-2">
             {semester[0].title}
@@ -50,7 +51,7 @@ export default function SemesterDetails() {
           {TABS.map((mappedTab, index) => (
             <button
               className={cn(
-                "text-lg transition-all duration-300 tracking-wider text-nowrap outline-none font-light cursor-pointer underline decoration-[0.5px] underline-offset-8",
+                "transition-all duration-300 tracking-wider text-nowrap outline-none font-light cursor-pointer underline decoration-[0.5px] underline-offset-8",
                 tab === mappedTab
                   ? "text-zinc-200 font-medium decoration-zinc-200"
                   : "animated-underline text-zinc-400 hover:text-zinc-300 decoration-transparent"
@@ -77,7 +78,7 @@ export default function SemesterDetails() {
           }
         })()}
       </main>
-      <LightRays className="fixed -z-50" speed={14} />
+      <AuroraBackground />
       <Particles className="fixed w-full h-full top-0 left-0 -z-50" />
     </>
   );
@@ -108,71 +109,47 @@ export function All({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
           </button>
         </header>
         <div className="grid 2xl:grid-cols-4 xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
-          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-red-400 bg-zinc-900 group flex flex-col">
+          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-red-400 bg-zinc-850 hover:bg-zinc-800 cursor-pointer group flex flex-col">
             <h5 className="md:text-xl text-lg font-semibold text-red-100 underline decoration-transparent group-hover:decoration-red-100 transition-all leading-6 mb-1">
               Classics Chapter 4
             </h5>
             <p className="text-red-200 text-sm font-light mb-6">Sep 24, 2025</p>
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-red-300 text-sm uppercase font-bold tracking-wider">
-                Classical Mythology
-              </p>
-              <button className="text-sm flex items-center gap-2 font-bold text-neutral-200 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-5 group-hover:translate-0 cursor-pointer">
-                <span className="animated-underline">View</span>
-                <GoArrowRight />
-              </button>
-            </div>
+            <p className="text-red-300 md:text-sm text-xs uppercase font-bold tracking-wider mt-auto">
+              Classical Mythology
+            </p>
           </div>
-          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-orange-400 bg-zinc-900 group flex flex-col">
+          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-orange-400 bg-zinc-850 hover:bg-zinc-800 cursor-pointer group flex flex-col">
             <h5 className="md:text-xl text-lg font-semibold text-orange-100 underline decoration-transparent group-hover:decoration-orange-100 transition-all leading-6 mb-1">
               Computer Science Lab 7
             </h5>
             <p className="text-orange-200 text-sm font-light mb-6">
               Sep 27, 2025
             </p>
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-orange-300 text-sm uppercase font-bold tracking-wider">
-                Intro to Computer Science
-              </p>
-              <button className="text-sm flex items-center gap-2 font-bold text-neutral-200 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-5 group-hover:translate-0 cursor-pointer">
-                <span className="animated-underline">View</span>
-                <GoArrowRight />
-              </button>
-            </div>
+            <p className="text-orange-300 md:text-sm text-xs uppercase font-bold tracking-wider mt-auto">
+              Intro to Computer Science
+            </p>
           </div>
-          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-yellow-400 bg-zinc-900 group flex flex-col">
+          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-yellow-400 bg-zinc-850 hover:bg-zinc-800 cursor-pointer group flex flex-col">
             <h5 className="md:text-xl text-lg font-semibold text-yellow-100 underline decoration-transparent group-hover:decoration-yellow-100 transition-all leading-6 mb-1">
               Discussion 1
             </h5>
             <p className="text-yellow-200 text-sm font-light mb-6">
               Sep 29, 2025
             </p>
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-yellow-300 text-sm uppercase font-bold tracking-wider">
-                First Year Seminar
-              </p>
-              <button className="text-sm flex items-center gap-2 font-bold text-neutral-200 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-5 group-hover:translate-0 cursor-pointer">
-                <span className="animated-underline">View</span>
-                <GoArrowRight />
-              </button>
-            </div>
+            <p className="text-yellow-300 md:text-sm text-xs uppercase font-bold tracking-wider mt-auto">
+              First Year Seminar
+            </p>
           </div>
-          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-green-400 bg-zinc-900 group flex flex-col">
+          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-green-400 bg-zinc-850 hover:bg-zinc-800 cursor-pointer group flex flex-col">
             <h5 className="md:text-xl text-lg font-semibold text-green-100 underline decoration-transparent group-hover:decoration-green-100 transition-all leading-6 mb-1">
               Exam 4
             </h5>
             <p className="text-green-200 text-sm font-light mb-6">
               Oct 3, 2025
             </p>
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-green-300 text-sm uppercase font-bold tracking-wider">
-                Intro to Anthropology
-              </p>
-              <button className="text-sm flex items-center gap-2 font-bold text-neutral-200 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-5 group-hover:translate-0 cursor-pointer">
-                <span className="animated-underline">View</span>
-                <GoArrowRight />
-              </button>
-            </div>
+            <p className="text-green-300 md:text-sm text-xs uppercase font-bold tracking-wider mt-auto">
+              Intro to Anthropology
+            </p>
           </div>
         </div>
       </section>
@@ -180,7 +157,7 @@ export function All({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
         <header className="flex items-center justify-between gap-2 mb-4">
           <aside>
             <h3 className="text-2xl font-semibold text-neutral-200">
-              Classes this semester
+              Classes enrolled
             </h3>
             <AnimatedShinyText
               className="text-neutral-400 m-0"
@@ -198,7 +175,7 @@ export function All({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
           </button>
         </header>
         <div className="grid 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 grid-cols-2 gap-6">
-          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-red-400 bg-zinc-900 group flex flex-col">
+          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-red-400 bg-zinc-850 hover:bg-zinc-800 cursor-pointer group flex flex-col">
             <h5 className="md:text-xl text-lg font-semibold text-red-100 underline decoration-transparent group-hover:decoration-red-100 transition-all leading-6">
               Intro to Anthropology
             </h5>
@@ -211,18 +188,12 @@ export function All({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
               a, doloremque eum illo accusantium aperiam, ullam cum quaerat,
               saepe id magni! Pariatur, fuga?
             </p>
-            <div className="flex items-end justify-between gap-4">
-              <p className="text-red-300 text-sm uppercase font-bold tracking-wider">
-                Mon 11:30 - 12:45 <br />
-                Thu 11:30 - 12:45
-              </p>
-              <button className="text-sm flex items-center gap-2 font-bold text-neutral-200 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-5 group-hover:translate-0 cursor-pointer">
-                <span className="animated-underline">View</span>
-                <GoArrowRight />
-              </button>
-            </div>
+            <p className="text-red-300 md:text-sm text-xs uppercase font-bold tracking-wider mt-auto">
+              Mon 11:30 - 12:45 <br />
+              Thu 11:30 - 12:45
+            </p>
           </div>
-          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-orange-400 bg-zinc-900 group flex flex-col">
+          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-orange-400 bg-zinc-850 hover:bg-zinc-800 cursor-pointer group flex flex-col">
             <h5 className="md:text-xl text-lg font-semibold text-orange-100 underline decoration-transparent group-hover:decoration-orange-100 transition-all leading-6 mb-1">
               Intro to Computer Science
             </h5>
@@ -235,18 +206,12 @@ export function All({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
               a, doloremque eum illo accusantium aperiam, ullam cum quaerat,
               saepe id magni! Pariatur, fuga?
             </p>
-            <div className="flex items-end justify-between gap-4">
-              <p className="text-orange-300 text-sm uppercase font-bold tracking-wider">
-                Tue 10:00 - 11:15 <br />
-                Fri 10:00 - 11:15
-              </p>
-              <button className="text-sm flex items-center gap-2 font-bold text-neutral-200 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-5 group-hover:translate-0 cursor-pointer">
-                <span className="animated-underline">View</span>
-                <GoArrowRight />
-              </button>
-            </div>
+            <p className="text-orange-300 md:text-sm text-xs uppercase font-bold tracking-wider mt-auto">
+              Tue 10:00 - 11:15 <br />
+              Fri 10:00 - 11:15
+            </p>
           </div>
-          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-yellow-400 bg-zinc-900 group flex flex-col">
+          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-yellow-400 bg-zinc-850 hover:bg-zinc-800 cursor-pointer group flex flex-col">
             <h5 className="md:text-xl text-lg font-semibold text-yellow-100 underline decoration-transparent group-hover:decoration-yellow-100 transition-all leading-6 mb-1">
               First Year Seminar
             </h5>
@@ -259,17 +224,11 @@ export function All({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
               a, doloremque eum illo accusantium aperiam, ullam cum quaerat,
               saepe id magni! Pariatur, fuga?
             </p>
-            <div className="flex items-end justify-between gap-4 mt-auto">
-              <p className="text-yellow-300 text-sm uppercase font-bold">
-                Wed 9:30 - 10:15
-              </p>
-              <button className="text-sm flex items-center gap-2 font-bold text-neutral-200 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-5 group-hover:translate-0 cursor-pointer">
-                <span className="animated-underline">View</span>
-                <GoArrowRight />
-              </button>
-            </div>
+            <p className="text-yellow-300 md:text-sm text-xs uppercase font-bold tracking-wider mt-auto">
+              Wed 9:30 - 10:15
+            </p>
           </div>
-          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-green-400 bg-zinc-900 group flex flex-col">
+          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-green-400 bg-zinc-850 hover:bg-zinc-800 cursor-pointer group flex flex-col">
             <h5 className="md:text-xl text-lg font-semibold text-green-100 underline decoration-transparent group-hover:decoration-green-100 transition-all leading-6 mb-1">
               Classical Mythology
             </h5>
@@ -282,18 +241,12 @@ export function All({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
               a, doloremque eum illo accusantium aperiam, ullam cum quaerat,
               saepe id magni! Pariatur, fuga?
             </p>
-            <div className="flex items-end justify-between gap-4">
-              <p className="text-green-300 text-sm uppercase font-bold">
-                Mon 10:00 - 11:15 <br />
-                Thu 10:00 - 11:15
-              </p>
-              <button className="text-sm flex items-center gap-2 font-bold text-neutral-200 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-5 group-hover:translate-0 cursor-pointer">
-                <span className="animated-underline">View</span>
-                <GoArrowRight />
-              </button>
-            </div>
+            <p className="text-green-300 md:text-sm text-xs uppercase font-bold tracking-wider mt-auto">
+              Mon 10:00 - 11:15 <br />
+              Thu 10:00 - 11:15
+            </p>
           </div>
-          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-cyan-400 bg-zinc-900 group flex flex-col">
+          <div className="p-4 rounded-md transition-all hover:scale-[1.02] backdrop-blur-sm border-b-2 border-cyan-400 bg-zinc-850 hover:bg-zinc-800 cursor-pointer group flex flex-col">
             <h5 className="text-xl font-semibold text-cyan-100 underline decoration-transparent group-hover:decoration-cyan-100 transition-all leading-6 mb-1">
               Calculus I
             </h5>
@@ -306,16 +259,10 @@ export function All({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
               a, doloremque eum illo accusantium aperiam, ullam cum quaerat,
               saepe id magni! Pariatur, fuga?
             </p>
-            <div className="flex items-end justify-between gap-4">
-              <p className="text-cyan-300 text-sm uppercase font-bold">
-                Mon 3:30 - 5:20 <br />
-                Thu 3:30 - 5:20
-              </p>
-              <button className="text-sm flex items-center gap-2 font-bold text-neutral-200 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-5 group-hover:translate-0 cursor-pointer">
-                <span className="animated-underline">View</span>
-                <GoArrowRight />
-              </button>
-            </div>
+            <p className="text-cyan-300 md:text-sm text-xs uppercase font-bold tracking-wider mt-auto">
+              Mon 3:30 - 5:20 <br />
+              Thu 3:30 - 5:20
+            </p>
           </div>
         </div>
       </section>
@@ -349,15 +296,18 @@ export function Classes({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
         </AnimatedShinyText>
       </header>
       <section className="flex flex-col gap-2">
-        <div className="border-t-2 border-b-2 py-6 px-3 flex flex-col w-full gap-6 hover:bg-zinc-950/20 transition-all">
-          <div className="grid grid-cols-3 gap-4">
+        <div className="border-t-2 border-b-2 py-6 px-3 flex flex-col w-full gap-6 hover:bg-zinc-850 cursor-pointer transition-all">
+          <div className="grid md:grid-cols-3 gap-4">
             <h5 className="font-black text-neutral-200 my-auto">
-              Classical Mythology
+              1.{" "}
+              <Highlighter action="underline" color="#f87171">
+                Classical Mythology
+              </Highlighter>
             </h5>
             <p className="text-neutral-300 font-light my-auto">
               Prof. Victoria Jannsen
             </p>
-            <div className="ml-auto text-sm my-auto">
+            <div className="md:ml-auto text-sm my-auto">
               <p className="text-neutral-300">Mon 10:00 - 11:15</p>
               <p className="text-neutral-300">Thu 10:00 - 11:15</p>
             </div>
@@ -371,35 +321,38 @@ export function Classes({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
             </p>
             <div className="grid grid-cols-2">
               <p className="font-medium text-neutral-200">Professor: </p>
-              <p className="ml-auto text-neutral-300">Prof. Gerald Creed</p>
+              <p className="ml-auto text-neutral-300 text-sm">
+                Prof. Gerald Creed
+              </p>
               <p className="font-medium text-neutral-200">Email: </p>
               <Link
-                className="ml-auto break-all text-blue-300 underline"
+                className="ml-auto break-all text-blue-300 underline text-sm"
                 href={`mailto:${"gerald.creed@hunter.cuny.edu"}`}
               >
                 gerald.creed@hunter.cuny.edu
               </Link>
               <p className="font-medium text-neutral-200">Office Hours: </p>
-              <div className="ml-auto text-neutral-300">
+              <div className="ml-auto text-neutral-300 text-sm">
                 <p>Mon 11:00 - 12:15 W 704</p>
                 <p>Wed 11:00 - 12:15 W 704</p>
               </div>
             </div>
           </div>
         </div>
-        <div className="border-t-2 border-b-2 py-6 px-3 flex flex-col w-full gap-6 hover:bg-zinc-950/20 transition-all">
-          <div className="grid grid-cols-3 gap-4">
+        <div className="border-t-2 border-b-2 py-6 px-3 flex flex-col w-full gap-6 hover:bg-zinc-850 cursor-pointer transition-all">
+          <div className="grid md:grid-cols-3 gap-4">
             <h5 className="font-black text-neutral-200 my-auto">
-              Intro to Anthropology
+              2.{" "}
+              <Highlighter action="underline" color="#fb923c">
+                Intro to Anthropology
+              </Highlighter>
             </h5>
             <p className="text-neutral-300 font-light my-auto">
               Prof. Gerald Creed
             </p>
-            <div className="ml-auto text-sm flex items-center justify-center gap-4">
-              <div>
-                <p className="text-neutral-300">Mon 11:30 - 12:45</p>
-                <p className="text-neutral-300">Thu 11:30 - 12:45</p>
-              </div>
+            <div className="md:ml-auto text-sm my-auto">
+              <p className="text-neutral-300">Mon 11:30 - 12:45</p>
+              <p className="text-neutral-300">Thu 11:30 - 12:45</p>
             </div>
           </div>
           <div className="grid lg:grid-cols-2 gap-x-[12.5%] gap-y-6">
@@ -411,31 +364,36 @@ export function Classes({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
             </p>
             <div className="grid grid-cols-2">
               <p className="font-medium text-neutral-200">Professor: </p>
-              <p className="ml-auto text-neutral-300">Prof. Gerald Creed</p>
+              <p className="ml-auto text-neutral-300 text-sm">
+                Prof. Gerald Creed
+              </p>
               <p className="font-medium text-neutral-200">Email: </p>
               <Link
-                className="ml-auto break-all text-blue-300 underline"
+                className="ml-auto break-all text-blue-300 underline text-sm"
                 href={`mailto:${"gerald.creed@hunter.cuny.edu"}`}
               >
                 gerald.creed@hunter.cuny.edu
               </Link>
               <p className="font-medium text-neutral-200">Office Hours: </p>
-              <div className="ml-auto text-neutral-300">
+              <div className="ml-auto text-neutral-300 text-sm">
                 <p>Mon 11:00 - 12:15 W 704</p>
                 <p>Wed 11:00 - 12:15 W 704</p>
               </div>
             </div>
           </div>
         </div>
-        <div className="border-t-2 border-b-2 py-6 px-3 flex flex-col w-full gap-6 hover:bg-zinc-950/20 transition-all">
-          <div className="grid grid-cols-3 gap-4">
+        <div className="border-t-2 border-b-2 py-6 px-3 flex flex-col w-full gap-6 hover:bg-zinc-850 cursor-pointer transition-all">
+          <div className="grid md:grid-cols-3 gap-4">
             <h5 className="font-black text-neutral-200 my-auto">
-              Intro to Computer Science
+              3.
+              <Highlighter action="underline" color="#facc15">
+                Intro to Computer Science
+              </Highlighter>
             </h5>
             <p className="text-neutral-300 font-light my-auto">
               Prof. John Doe
             </p>
-            <div className="ml-auto text-sm my-auto">
+            <div className="md:ml-auto text-sm my-auto">
               <p className="text-neutral-300">Tue 10:00 - 11:15</p>
               <p className="text-neutral-300">Fri 10:00 - 11:15</p>
             </div>
@@ -449,31 +407,36 @@ export function Classes({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
             </p>
             <div className="grid grid-cols-2">
               <p className="font-medium text-neutral-200">Professor: </p>
-              <p className="ml-auto text-neutral-300">Prof. Gerald Creed</p>
+              <p className="ml-auto text-neutral-300 text-sm">
+                Prof. Gerald Creed
+              </p>
               <p className="font-medium text-neutral-200">Email: </p>
               <Link
-                className="ml-auto break-all text-blue-300 underline"
+                className="ml-auto break-all text-blue-300 underline text-sm"
                 href={`mailto:${"gerald.creed@hunter.cuny.edu"}`}
               >
                 gerald.creed@hunter.cuny.edu
               </Link>
               <p className="font-medium text-neutral-200">Office Hours: </p>
-              <div className="ml-auto text-neutral-300">
+              <div className="ml-auto text-neutral-300 text-sm">
                 <p>Mon 11:00 - 12:15 W 704</p>
                 <p>Wed 11:00 - 12:15 W 704</p>
               </div>
             </div>
           </div>
         </div>
-        <div className="border-t-2 border-b-2 py-6 px-3 flex flex-col w-full gap-6 hover:bg-zinc-950/20 transition-all">
-          <div className="grid grid-cols-3 gap-4">
+        <div className="border-t-2 border-b-2 py-6 px-3 flex flex-col w-full gap-6 hover:bg-zinc-850 cursor-pointer transition-all">
+          <div className="grid md:grid-cols-3 gap-4">
             <h5 className="font-black text-neutral-200 my-auto">
-              First Year Seminar
+              4.
+              <Highlighter action="underline" color="#4ade80">
+                First Year Seminar
+              </Highlighter>
             </h5>
             <p className="text-neutral-300 font-light my-auto">
               Prof. Elise Harris
             </p>
-            <div className="ml-auto text-sm my-auto">
+            <div className="md:ml-auto text-sm my-auto">
               <p className="text-neutral-300">Wed 9:30 - 10:15</p>
             </div>
           </div>
@@ -486,29 +449,36 @@ export function Classes({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
             </p>
             <div className="grid grid-cols-2">
               <p className="font-medium text-neutral-200">Professor: </p>
-              <p className="ml-auto text-neutral-300">Prof. Gerald Creed</p>
+              <p className="ml-auto text-neutral-300 text-sm">
+                Prof. Gerald Creed
+              </p>
               <p className="font-medium text-neutral-200">Email: </p>
               <Link
-                className="ml-auto break-all text-blue-300 underline"
+                className="ml-auto break-all text-blue-300 underline text-sm"
                 href={`mailto:${"gerald.creed@hunter.cuny.edu"}`}
               >
                 gerald.creed@hunter.cuny.edu
               </Link>
               <p className="font-medium text-neutral-200">Office Hours: </p>
-              <div className="ml-auto text-neutral-300">
+              <div className="ml-auto text-neutral-300 text-sm">
                 <p>Mon 11:00 - 12:15 W 704</p>
                 <p>Wed 11:00 - 12:15 W 704</p>
               </div>
             </div>
           </div>
         </div>
-        <div className="border-t-2 border-b-2 py-6 px-3 flex flex-col w-full gap-6 hover:bg-zinc-950/20 transition-all">
-          <div className="grid grid-cols-3 gap-4">
-            <h5 className="font-black text-neutral-200 my-auto">Calculus I</h5>
+        <div className="border-t-2 border-b-2 py-6 px-3 flex flex-col w-full gap-6 hover:bg-zinc-850 cursor-pointer transition-all">
+          <div className="grid md:grid-cols-3 gap-4">
+            <h5 className="font-black text-neutral-200 my-auto">
+              5.
+              <Highlighter action="underline" color="#06b6d4">
+                Calculus I
+              </Highlighter>
+            </h5>
             <p className="text-neutral-300 font-light my-auto">
               Prof. Be&apos;eri Greenfeld
             </p>
-            <div className="ml-auto text-sm my-auto">
+            <div className="md:ml-auto text-sm my-auto">
               <p className="text-neutral-300">Mon 3:30 - 5:20</p>
               <p className="text-neutral-300">Thu 3:30 - 5:20</p>
             </div>
@@ -522,16 +492,18 @@ export function Classes({ setTab }: { setTab: Dispatch<SetStateAction<Tab>> }) {
             </p>
             <div className="grid grid-cols-2">
               <p className="font-medium text-neutral-200">Professor: </p>
-              <p className="ml-auto text-neutral-300">Prof. Gerald Creed</p>
+              <p className="ml-auto text-neutral-300 text-sm">
+                Prof. Gerald Creed
+              </p>
               <p className="font-medium text-neutral-200">Email: </p>
               <Link
-                className="ml-auto break-all text-blue-300 underline"
+                className="ml-auto break-all text-blue-300 underline text-sm"
                 href={`mailto:${"gerald.creed@hunter.cuny.edu"}`}
               >
                 gerald.creed@hunter.cuny.edu
               </Link>
               <p className="font-medium text-neutral-200">Office Hours: </p>
-              <div className="ml-auto text-neutral-300">
+              <div className="ml-auto text-neutral-300 text-sm">
                 <p>Mon 11:00 - 12:15 W 704</p>
                 <p>Wed 11:00 - 12:15 W 704</p>
               </div>

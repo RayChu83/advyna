@@ -252,7 +252,7 @@ export default function CreateClassForm() {
         <header className="flex items-center justify-between">
           <Label id="class-syllabus" required={true} title="Class Syllabus" />
           <aside className={cn("flex items-center gap-3")}>
-            <div className="p-1 rounded-sm bg-zinc-800 outline outline-zinc-700 w-fit space-x-1">
+            <div className="p-1 rounded-sm bg-zinc-850 outline outline-zinc-700 w-fit space-x-1">
               <button
                 className={cn(
                   "px-3 py-0.5 rounded-sm text-sm",
@@ -353,11 +353,10 @@ export default function CreateClassForm() {
           </div>
         </div>
       </div>
-      {/* <SyllabusUpload /> */}
       <div className="flex items-center justify-between">
         <aside className="space-x-4 flex">
           <button
-            className="py-2 px-3 rounded-md bg-zinc-800 outline outline-zinc-700 cursor-pointer hover:brightness-110 transition-all"
+            className="py-2 px-3 rounded-md bg-zinc-850 outline outline-zinc-700 cursor-pointer hover:brightness-110 transition-all"
             type="button"
             onClick={handleReset}
           >

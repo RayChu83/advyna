@@ -68,6 +68,27 @@ export type FILE_TYPE = {
   key: string;
 };
 
+export const EmailSchema = z
+  .email("Email must be a valid email address")
+  .max(254, { message: "Email is too long" });
+
+export const PasswordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters long")
+  .max(128, "Password is too long")
+  .refine((v) => !/\s/.test(v), {
+    message: "Password must not contain spaces",
+  })
+  .refine((v) => /[a-z]/.test(v), {
+    message: "Password must contain a lowercase letter",
+  })
+  .refine((v) => /[A-Z]/.test(v), {
+    message: "Password must contain an uppercase letter",
+  })
+  .refine((v) => /\d/.test(v), {
+    message: "Password must contain a number",
+  });
+
 export const defaultSemesters = [
   {
     id: "986a886f-229b-4048-a4b0-de6aaf1fa2df",

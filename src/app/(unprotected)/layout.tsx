@@ -1,4 +1,3 @@
-import FooterMenu from "./_components/FooterMenu";
 import NavMenu from "./_components/NavMenu";
 
 export default function UnprotectedRoutesLayout({
@@ -10,7 +9,7 @@ export default function UnprotectedRoutesLayout({
     <>
       <NavMenu />
       {children}
-      <FooterMenu />
+      {/* <FooterMenu /> */}
     </>
   );
 }

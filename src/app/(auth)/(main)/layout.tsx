@@ -1,6 +1,6 @@
 import NavMenu from "./_components/NavMenu";
 
-export default function ProtectedRoutesLayout({
+export default function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

@@ -8,7 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LightRays } from "@/components/ui/light-rays";
 import { Particles } from "@/components/ui/particles";
 import {
   Tooltip,
@@ -16,7 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useState } from "react";
-import { GoArrowRight, GoPersonAdd } from "react-icons/go";
+import { GoArrowLeft, GoArrowRight, GoPersonAdd } from "react-icons/go";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdDelete, MdEdit } from "react-icons/md";
 import {
@@ -33,6 +32,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { defaultSemesters } from "@/constants";
 import { toast } from "sonner";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 
 export default function Semesters() {
   const [semesters, setSemesters] = useState(defaultSemesters);
@@ -52,12 +52,12 @@ export default function Semesters() {
     <>
       <main className="mt-17 flex flex-col gap-2 max-w-480 mx-auto p-6">
         <header className="mb-8 flex flex-col gap-1.5 w-fit">
-          <AnimatedShinyText
-            className="text-neutral-400 m-0"
-            shimmerWidth={200}
+          <Link
+            href="/dashboard"
+            className="text-neutral-400 hover:text-neutral-300 flex items-center gap-2 transition-all font-semibold tracking-tight"
           >
-            <span className="font-bold tracking-tight">Hunter College</span>
-          </AnimatedShinyText>
+            <GoArrowLeft /> <span>Return to Dashboard</span>
+          </Link>
           <h1 className="sm:text-5xl text-4xl tracking-tight font-black text-neutral-200 mb-2">
             Your Semesters:
           </h1>
@@ -77,7 +77,7 @@ export default function Semesters() {
         <div className="grid 2xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
           {semesters.map((semester, i) => (
             <section
-              className="w-full bg-zinc-900 rounded-md p-4 group transition-all duration-300  hover:scale-[1.02] ease-in-out border-b-3 border-r-3 border-emerald-600 hover:border-emerald-500"
+              className="w-full bg-zinc-850 hover:bg-zinc-800 rounded-md p-4 group transition-all duration-300  hover:scale-[1.02] ease-in-out border-b-2 border-r-2 border-zinc-600"
               key={i}
             >
               <header className="flex items-center justify-between mb-4">
@@ -121,7 +121,7 @@ export default function Semesters() {
                       </DialogHeader>
                       <input
                         type="text"
-                        className="bg-zinc-800 text-neutral-300 px-4 py-2 w-full rounded-sm outline-offset-2 transition-all border border-zinc-600 outline-2 outline-transparent focus:outline-zinc-400/60"
+                        className="bg-zinc-850 text-neutral-300 px-4 py-2 w-full rounded-sm outline-offset-2 transition-all border border-zinc-600 outline-2 outline-transparent focus:outline-zinc-400/60"
                         defaultValue={`http://localhost:3000/semesters/${semester.id}`}
                         disabled
                         readOnly
@@ -138,7 +138,7 @@ export default function Semesters() {
                           Copy
                         </button>
                         <DialogClose asChild>
-                          <button className="w-fit py-2 px-4 rounded-sm bg-zinc-800 text-neutral-300 cursor-pointer">
+                          <button className="w-fit py-2 px-4 rounded-sm bg-zinc-850 text-neutral-300 cursor-pointer">
                             Close
                           </button>
                         </DialogClose>
@@ -158,13 +158,13 @@ export default function Semesters() {
                         </Tooltip>
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-zinc-800 outline-zinc-600">
+                    <DropdownMenuContent className="bg-zinc-850 outline-zinc-600">
                       <DropdownMenuLabel className="font-semibold tracking-tight text-neutral-300">
                         Settings
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <button className="w-full text-neutral-300 hover:bg-zinc-900! transition-all cursor-pointer flex items-center justify-between group">
+                        <button className="w-full text-neutral-300 hover:bg-zinc-800! transition-all cursor-pointer flex items-center justify-between group">
                           <span className="group-hover:text-yellow-400 transition-all">
                             Edit
                           </span>
@@ -172,7 +172,7 @@ export default function Semesters() {
                         </button>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <button className="w-full text-neutral-300 hover:bg-zinc-900! transition-all cursor-pointer flex items-center justify-between group">
+                        <button className="w-full text-neutral-300 hover:bg-zinc-800! transition-all cursor-pointer flex items-center justify-between group">
                           <span className="group-hover:text-red-400 transition-all">
                             Delete
                           </span>
@@ -208,7 +208,7 @@ export default function Semesters() {
           ))}
         </div>
       </main>
-      <LightRays className="fixed -z-50" speed={14} />
+      <AuroraBackground />
       <Particles className="fixed w-full h-full top-0 left-0 -z-50" />
     </>
   );

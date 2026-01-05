@@ -52,6 +52,7 @@
   --color-color-3: var(--color-3);
   --color-color-2: var(--color-2);
   --color-color-1: var(--color-1);
+  --color-zinc-850: #202023;
   --animate-ripple: ripple var(--duration, 2s) ease calc(var(--i, 0) * 0.2s)
     infinite;
   @keyframes ripple {
@@ -174,6 +175,18 @@
     }
     100% {
       background-position: 200%;
+    }
+  }
+}
+
+@theme inline {
+  --animate-aurora: aurora 60s linear infinite;
+  @keyframes aurora {
+    from {
+      background-position: 50% 50%, 50% 50%;
+    }
+    to {
+      background-position: 350% 50%, 350% 50%;
     }
   }
 }
