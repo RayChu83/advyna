@@ -1,7 +1,7 @@
 "use client";
 import Label from "@/components/ui/Label";
 import { RainbowButton } from "@/components/ui/rainbow-button";
-import { supabase } from "@/lib/supabaseClient";
+import { supabaseBrowserClient as supabase } from "@/lib/supabase/browser";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import z from "zod";
 import { v4 as uuidv4 } from "uuid";
-import { createClient } from "@supabase/supabase-js";
 import { isAllowedFileType, MAX_FILE_SIZE } from "@/constants";
+import { serverClient } from "@/lib/supabase/server";
 
 const uploadRequestSchema = z.object({
   fileName: z.string(),
@@ -10,13 +10,8 @@ const uploadRequestSchema = z.object({
   size: z.number(),
 });
 
-// create supabase client
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SECRET_KEY!
-);
-
 export async function POST(request: Request) {
+  const supabase = await serverClient();
   try {
     const body = await request.json();
     const bodyParsed = uploadRequestSchema.safeParse(body);
@@ -78,6 +73,7 @@ const fileNameSchema = z
   .regex(/^[a-f0-9-]{36}-[a-zA-Z0-9._-]+$/, "Invalid file key format");
 
 export async function DELETE(request: Request) {
+  const supabase = await serverClient();
   try {
     // deconstruct body to get fileName and parse with Zod
     const { fileName } = await request.json();

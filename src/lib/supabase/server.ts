@@ -1,4 +1,4 @@
-import { createServerClient, createBrowserClient } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -33,8 +33,3 @@ export const serverClient = async () => {
     },
   });
 };
-
-export const supabaseBrowserClient = createBrowserClient(
-  supabaseUrl,
-  supabasePublishableKey
-);

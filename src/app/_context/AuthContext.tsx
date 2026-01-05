@@ -1,17 +1,19 @@
 "use client";
 
-import { supabase } from "@/lib/supabaseClient";
+import { supabaseBrowserClient as supabase } from "@/lib/supabase/browser";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
+import { redirect, usePathname } from "next/navigation";
 
-const SessionContext = createContext<Session | null>(null);
+const SessionContext = createContext<Session | null | undefined>(undefined);
 
 export const SessionProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<Session | null | undefined>(undefined);
+  const pathName = usePathname();
 
   useEffect(() => {
     let mounted = true;
@@ -35,6 +37,16 @@ export const SessionProvider = ({
       listener?.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (
+      session === null &&
+      !pathName.startsWith("/sign-in") &&
+      !pathName.startsWith("/sign-up")
+    ) {
+      redirect("/sign-in");
+    }
+  }, [session, pathName]);
 
   return (
     <SessionContext.Provider value={session}>

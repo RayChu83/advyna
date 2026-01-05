@@ -11,8 +11,8 @@ import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { GoArrowRight } from "react-icons/go";
 import { cn } from "@/lib/utils";
 import { RainbowButton } from "@/components/ui/rainbow-button";
-import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
+import { supabaseBrowserClient as supabase } from "@/lib/supabase/browser";
 
 export default function NavMenu() {
   // state used for determining whether the user scrolled (navbar white background)
