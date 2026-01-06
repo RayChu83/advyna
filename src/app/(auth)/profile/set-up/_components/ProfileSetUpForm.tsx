@@ -4,6 +4,9 @@ import { RainbowButton } from "@/components/ui/rainbow-button";
 import { cn } from "@/lib/utils";
 import { FormEvent, useState } from "react";
 import { supabaseBrowserClient as supabase } from "@/lib/supabase/browser";
+import { useSession } from "@/app/_context/AuthContext";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const initProfileDetails = {
   firstName: { value: "", error: "" },
@@ -12,7 +15,9 @@ const initProfileDetails = {
 };
 
 export default function ProfileSetUpForm() {
+  const session = useSession();
   const [profileDetails, setProfileDetails] = useState(initProfileDetails);
+  const router = useRouter();
 
   const handleReset = () => {
     setProfileDetails(initProfileDetails);
@@ -20,6 +25,50 @@ export default function ProfileSetUpForm() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!session) {
+      toast.error("Session was missing", {
+        description: "Please log back in and try again",
+      });
+      return;
+    }
+    const {
+      data: { user },
+      error: getUserError,
+    } = await supabase.auth.getUser();
+
+    if (!user || getUserError) {
+      toast.error("Failed to load user", {
+        description: getUserError?.message,
+      });
+      return;
+    }
+
+    // optional sanity check
+    if (session && session.user.id !== user.id) {
+      toast.error("Session and user are not the same", {
+        description: "Please refresh and try again",
+      });
+    }
+
+    const { data, error: completeProfileError } = await supabase
+      .from("profiles")
+      .insert([
+        {
+          firstName: profileDetails.firstName.value,
+          lastName: profileDetails.lastName.value,
+          school: profileDetails.school.value,
+        },
+      ]);
+
+    if (completeProfileError) {
+      toast.error("Failed to complete profile", {
+        description: completeProfileError.message,
+      });
+      return;
+    }
+
+    toast.success("Profile was completed");
+    router.push("/dashboard");
   };
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit}>

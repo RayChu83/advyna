@@ -48,11 +48,13 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/sign-in", request.url));
       }
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("id")
         .eq("id", user.id)
         .maybeSingle();
+
+      console.log(profile, profileError);
 
       if (!profile && !request.nextUrl.pathname.startsWith("/profile/set-up")) {
         return NextResponse.redirect(new URL("/profile/set-up", request.url));

@@ -5,6 +5,7 @@ import { EmailSchema, PasswordSchema } from "@/constants";
 import { supabaseBrowserClient as supabase } from "@/lib/supabase/browser";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 
@@ -15,6 +16,7 @@ const initSignUpDetails = {
 
 export default function SignUpForm() {
   const [signUpDetails, setSignUpDetails] = useState(initSignUpDetails);
+  const router = useRouter();
 
   const handleReset = () => {
     setSignUpDetails(initSignUpDetails);
@@ -48,6 +50,7 @@ export default function SignUpForm() {
       if (!error) {
         handleReset();
         toast.success("User was created", { description: data.user?.email });
+        router.push("/profile/set-up");
         // update status state
       } else {
         toast.error("Failed to sign up", {
